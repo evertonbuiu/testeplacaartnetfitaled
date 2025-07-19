@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import SchematicPage from "./pages/SchematicPage";
 import PCBPage from "./pages/PCBPage";
+import DisplayPCBPage from "./pages/DisplayPCBPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/schematic" element={<SchematicPage />} />
           <Route path="/pcb" element={<PCBPage />} />
+          <Route path="/display-pcb" element={<DisplayPCBPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

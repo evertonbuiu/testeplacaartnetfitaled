@@ -2,20 +2,20 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Download, Maximize2, Zap, Cpu } from 'lucide-react';
-import pcbImage from '@/assets/pcb-board.jpg';
+import mainPcbImage from '@/assets/main-pcb-board.jpg';
 
 export function PCBView() {
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = pcbImage;
-    link.download = 'placa-pcb-ws2811-controller.jpg';
+    link.href = mainPcbImage;
+    link.download = 'placa-pcb-principal-ws2811.jpg';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   const handleFullscreen = () => {
-    window.open(pcbImage, '_blank');
+    window.open(mainPcbImage, '_blank');
   };
 
   const pcbSpecs = [
@@ -32,10 +32,10 @@ export function PCBView() {
     { name: 'Drivers WS2811', qty: '32x', type: 'SN74HCT245' },
     { name: 'Conectores RJ45', qty: '2x', type: 'Ethernet' },
     { name: 'Reguladores de Tensão', qty: '3x', type: '5V/3.3V' },
-    { name: 'Display LCD', qty: '1x', type: '16x2 Character' },
-    { name: 'Botões Tácteis', qty: '4x', type: '6mm' },
-    { name: 'LEDs de Status', qty: '8x', type: 'SMD 0805' },
-    { name: 'Conectores de Saída', qty: '32x', type: '3-Pin JST' }
+    { name: 'Conector Cabo Flat', qty: '1x', type: '20-Pin FFC' },
+    { name: 'LEDs de Status', qty: '4x', type: 'SMD 0805' },
+    { name: 'Conectores de Saída', qty: '32x', type: '3-Pin JST' },
+    { name: 'Capacitores de Filtro', qty: '16x', type: 'SMD 1206' }
   ];
 
   return (
@@ -45,10 +45,10 @@ export function PCBView() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-primary font-mono mb-2">
-              PLACA PCB - CONTROLADOR WS2811
+              PLACA PRINCIPAL - CONTROLADOR WS2811
             </h2>
             <p className="text-muted-foreground font-mono">
-              Layout profissional da placa de circuito impresso
+              Placa principal com conexão para módulo de display via cabo flat
             </p>
           </div>
           <div className="flex gap-2">
@@ -81,7 +81,7 @@ export function PCBView() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-accent font-mono">
-                  VISTA SUPERIOR DA PCB
+                  PLACA PRINCIPAL (SEM DISPLAY)
                 </h3>
                 <Badge variant="outline" className="font-mono">
                   4 CAMADAS
@@ -90,15 +90,15 @@ export function PCBView() {
 
               <div className="border-2 border-border rounded-lg overflow-hidden bg-background p-4">
                 <img
-                  src={pcbImage}
-                  alt="Placa PCB do Controlador WS2811"
+                  src={mainPcbImage}
+                  alt="Placa Principal do Controlador WS2811"
                   className="w-full h-auto object-contain rounded"
                   style={{ maxHeight: '500px' }}
                 />
               </div>
 
               <div className="text-xs text-muted-foreground font-mono text-center">
-                PCB PROFISSIONAL | LAYOUT OTIMIZADO | COMPONENTES SMD/THT
+                PLACA PRINCIPAL | CONEXÃO CABO FLAT | DESIGN MODULAR
               </div>
             </div>
           </Card>

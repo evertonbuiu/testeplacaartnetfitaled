@@ -1,6 +1,6 @@
 import { PCBView } from '@/components/PCBView';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, FileText } from 'lucide-react';
+import { ArrowLeft, FileText, Monitor } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function PCBPage() {
@@ -20,12 +20,20 @@ export default function PCBPage() {
           </h1>
         </div>
         
-        <Button asChild variant="outline" size="sm">
-          <Link to="/schematic">
-            <FileText className="w-4 h-4 mr-2" />
-            Ver Esquema Elétrico
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link to="/schematic">
+              <FileText className="w-4 h-4 mr-2" />
+              Ver Esquema Elétrico
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link to="/display-pcb">
+              <Monitor className="w-4 h-4 mr-2" />
+              Ver Placa Display
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Vista da PCB */}

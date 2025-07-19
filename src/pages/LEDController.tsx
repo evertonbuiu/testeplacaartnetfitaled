@@ -112,7 +112,13 @@ export default function LEDController() {
             <Button asChild variant="outline" className="font-mono">
               <Link to="/pcb">
                 <Microchip className="w-4 h-4 mr-2" />
-                VER PLACA PCB
+                VER PLACA PRINCIPAL
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="font-mono">
+              <Link to="/display-pcb">
+                <Microchip className="w-4 h-4 mr-2" />
+                VER PLACA DISPLAY
               </Link>
             </Button>
           </div>
