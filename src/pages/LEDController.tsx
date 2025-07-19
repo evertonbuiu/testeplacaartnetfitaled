@@ -18,7 +18,7 @@ interface NetworkConfig {
   ip: string;
   subnet: string;
   gateway: string;
-  dhcp: boolean;
+  mode: 'auto' | 'broadcast' | 'fixed';
 }
 
 export default function LEDController() {
@@ -30,7 +30,7 @@ export default function LEDController() {
     ip: '192.168.1.100',
     subnet: '255.255.255.0',
     gateway: '192.168.1.1',
-    dhcp: false
+    mode: 'fixed'
   });
   
   const [artnetPackets, setArtnetPackets] = useState(0);
@@ -59,6 +59,19 @@ export default function LEDController() {
     setOutputs(prev => prev.map((output, index) => 
       index === outputIndex ? { ...output, isActive: !output.isActive } : output
     ));
+  };
+
+  const getCurrentIP = () => {
+    switch (networkConfig.mode) {
+      case 'auto':
+        return '192.168.1.105'; // IP simulado obtido via DHCP
+      case 'broadcast':
+        return '2.255.255.255';
+      case 'fixed':
+        return networkConfig.ip;
+      default:
+        return networkConfig.ip;
+    }
   };
 
   const totalUniverses = outputs.reduce((sum, output) => 
@@ -122,8 +135,8 @@ export default function LEDController() {
             outputStatus="connected"
             artnetPackets={artnetPackets}
             dataRate="125 Mbps"
-            currentIP={networkConfig.ip}
-            networkMode={networkConfig.dhcp ? 'DHCP' : 'MANUAL'}
+            currentIP={getCurrentIP()}
+            networkMode={networkConfig.mode.toUpperCase()}
           />
 
           {/* Status do Sistema */}

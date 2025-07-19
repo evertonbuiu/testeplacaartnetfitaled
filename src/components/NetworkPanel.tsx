@@ -88,8 +88,12 @@ export function NetworkPanel({ inputStatus, outputStatus, artnetPackets, dataRat
           {/* Configuração IP Atual */}
           <div className="bg-background p-2 rounded border">
             <div className="text-muted-foreground text-xs mb-1">CONFIGURAÇÃO IP:</div>
-            <div className="text-sm font-bold text-primary">{currentIP}</div>
-            <div className="text-xs text-accent">{networkMode}</div>
+            <div className="text-sm font-bold text-primary">
+              {networkMode === 'AUTO' && 'IP Automático (DHCP)'}
+              {networkMode === 'BROADCAST' && '2.255.255.255 (Broadcast)'}
+              {networkMode === 'FIXED' && currentIP}
+            </div>
+            <div className="text-xs text-accent">MODO: {networkMode}</div>
           </div>
         </div>
 

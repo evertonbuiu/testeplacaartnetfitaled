@@ -23,7 +23,7 @@ interface NetworkConfig {
   ip: string;
   subnet: string;
   gateway: string;
-  dhcp: boolean;
+  mode: 'auto' | 'broadcast' | 'fixed';
 }
 
 interface ControlDisplayProps {
@@ -56,7 +56,7 @@ export function ControlDisplay({ artnetStatus, universe, subnet, networkConfig, 
   ];
 
   const networkOptions = [
-    { label: 'MODO', value: networkConfig.dhcp ? 'DHCP' : 'MANUAL', editable: true },
+    { label: 'MODO', value: networkConfig.mode.toUpperCase(), editable: true },
     { label: 'IP ADDRESS', value: networkConfig.ip, editable: true },
     { label: 'SUBNET MASK', value: networkConfig.subnet, editable: true },
     { label: 'GATEWAY', value: networkConfig.gateway, editable: true },
@@ -82,7 +82,7 @@ export function ControlDisplay({ artnetStatus, universe, subnet, networkConfig, 
     setIsEditing(false);
     toast({
       title: "Configuração Salva",
-      description: `IP ${tempConfig.ip} configurado em modo ${tempConfig.dhcp ? 'DHCP' : 'MANUAL'}`,
+      description: `IP ${tempConfig.ip} configurado em modo ${tempConfig.mode.toUpperCase()}`,
     });
     console.log('Configuração de rede salva:', tempConfig);
   };
@@ -90,7 +90,7 @@ export function ControlDisplay({ artnetStatus, universe, subnet, networkConfig, 
   const handleNetworkEdit = (field: string, value: string) => {
     setTempConfig(prev => ({
       ...prev,
-      [field]: field === 'dhcp' ? value === 'DHCP' : value
+      [field]: value
     }));
   };
 
@@ -198,7 +198,7 @@ export function ControlDisplay({ artnetStatus, universe, subnet, networkConfig, 
                     <span>{option.label}:</span>
                     {option.editable ? (
                       <span className="font-bold">
-                        {option.label === 'MODO' ? (tempConfig.dhcp ? 'DHCP' : 'MANUAL') : 
+                        {option.label === 'MODO' ? tempConfig.mode.toUpperCase() : 
                          option.label === 'IP ADDRESS' ? tempConfig.ip :
                          option.label === 'SUBNET MASK' ? tempConfig.subnet :
                          option.label === 'GATEWAY' ? tempConfig.gateway : ''}
@@ -248,21 +248,46 @@ export function ControlDisplay({ artnetStatus, universe, subnet, networkConfig, 
               </h4>
               
               <div className="space-y-2">
-                {/* Modo DHCP/Manual */}
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-mono">MODO:</span>
-                  <Button
-                    size="sm"
-                    variant={tempConfig.dhcp ? "default" : "outline"}
-                    onClick={() => setTempConfig(prev => ({ ...prev, dhcp: !prev.dhcp }))}
-                    className="text-xs font-mono"
-                  >
-                    {tempConfig.dhcp ? 'DHCP' : 'MANUAL'}
-                  </Button>
+                {/* Seletor de Modo IP */}
+                <div className="space-y-2">
+                  <span className="text-xs font-mono text-muted-foreground">MODO DE IP:</span>
+                  <div className="grid grid-cols-3 gap-1">
+                    <Button
+                      size="sm"
+                      variant={tempConfig.mode === 'auto' ? "default" : "outline"}
+                      onClick={() => setTempConfig(prev => ({ ...prev, mode: 'auto' }))}
+                      className="text-xs font-mono"
+                    >
+                      AUTO
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={tempConfig.mode === 'broadcast' ? "default" : "outline"}
+                      onClick={() => setTempConfig(prev => ({ ...prev, mode: 'broadcast' }))}
+                      className="text-xs font-mono"
+                    >
+                      BROADCAST
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={tempConfig.mode === 'fixed' ? "default" : "outline"}
+                      onClick={() => setTempConfig(prev => ({ ...prev, mode: 'fixed' }))}
+                      className="text-xs font-mono"
+                    >
+                      IP FIXO
+                    </Button>
+                  </div>
                 </div>
 
-                {/* Campos IP (apenas se manual) */}
-                {!tempConfig.dhcp && (
+                {/* Descrição do modo selecionado */}
+                <div className="text-xs text-muted-foreground font-mono p-2 bg-background rounded border">
+                  {tempConfig.mode === 'auto' && '🔄 IP automático via DHCP - O dispositivo obterá automaticamente um endereço IP do roteador'}
+                  {tempConfig.mode === 'broadcast' && '📡 Modo broadcast ART-NET - Ideal para redes de iluminação profissional (2.255.255.255)'}
+                  {tempConfig.mode === 'fixed' && '🔧 IP estático - Configure manualmente o endereço IP, máscara e gateway'}
+                </div>
+
+                {/* Campos IP (apenas se IP fixo) */}
+                {tempConfig.mode === 'fixed' && (
                   <>
                     <div className="space-y-1">
                       <label className="text-xs font-mono text-muted-foreground">IP ADDRESS:</label>
@@ -294,6 +319,30 @@ export function ControlDisplay({ artnetStatus, universe, subnet, networkConfig, 
                       />
                     </div>
                   </>
+                )}
+
+                {/* IP para modo broadcast */}
+                {tempConfig.mode === 'broadcast' && (
+                  <div className="space-y-1">
+                    <label className="text-xs font-mono text-muted-foreground">IP BROADCAST:</label>
+                    <Input
+                      value="2.255.255.255"
+                      disabled
+                      className="text-xs font-mono h-8 bg-muted"
+                    />
+                  </div>
+                )}
+
+                {/* IP para modo auto */}
+                {tempConfig.mode === 'auto' && (
+                  <div className="space-y-1">
+                    <label className="text-xs font-mono text-muted-foreground">IP AUTOMÁTICO:</label>
+                    <Input
+                      value="Obtido via DHCP"
+                      disabled
+                      className="text-xs font-mono h-8 bg-muted"
+                    />
+                  </div>
                 )}
 
                 {/* Botão Salvar */}
