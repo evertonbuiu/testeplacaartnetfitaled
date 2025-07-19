@@ -1,0 +1,18 @@
+G04 #@! TF.GenerationSoftware,KiCad,Pcbnew,7.0.0*
+G04 #@! TF.CreationDate,2025-01-19T10:30:00-03:00*
+G04 #@! TF.ProjectId,LED-Controller,4c45442d-436f-4e74-926f-6c6c65722e6b,1.0*
+G04 #@! TF.SameCoordinates,Original*
+G04 #@! TF.FileFunction,Soldermask,Top*
+G04 #@! TF.FilePolarity,Negative*
+%FSLAX36Y36*%
+%MOMM*%
+%LPD*%
+G01*
+G04 APERTURE LIST*
+%ADD10C,0.200000*%
+%ADD11C,0.150000*%
+%ADD12R,1.800000X1.000000*%
+%ADD13R,2.740000X1.470000*%
+%ADD14C,1.200000*%
+G04 APERTURE END LIST*
+M02*
