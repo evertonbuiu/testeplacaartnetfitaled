@@ -83,6 +83,7 @@ export function ControlDisplay({
   const [tempICConfig, setTempICConfig] = useState(icConfig);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [testMode, setTestMode] = useState<'off' | 'rgb' | 'rainbow' | 'chase'>('off');
+  const [selectedTestOutput, setSelectedTestOutput] = useState(1);
   const [outputs, setOutputs] = useState<OutputConfig[]>(() => {
     const outputArray: OutputConfig[] = [];
     for (let i = 1; i <= 32; i++) {
@@ -514,6 +515,76 @@ export function ControlDisplay({
                   <div className="p-2 bg-purple-900/30 rounded border border-purple-600">
                     <div className="text-purple-300 text-xs font-mono text-center">
                       🔌 TOTAL: {outputs.filter(o => o.enabled).reduce((sum, o) => sum + o.universes, 0)} UNIVERSOS ATIVOS
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Menu Teste RGB */}
+              {currentMenu === 'test' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-white font-bold font-mono">TESTE RGB SAÍDAS</h3>
+                    <button 
+                      onClick={() => setCurrentMenu('main')}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <Home className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="text-xs text-gray-300 font-mono">SELECIONAR SAÍDA:</div>
+                    <div className="grid grid-cols-4 gap-1 max-h-32 overflow-y-auto">
+                      {outputs.filter(o => o.enabled).map((output) => (
+                        <button
+                          key={output.id}
+                          onClick={() => setSelectedTestOutput(output.id)}
+                          className={`p-2 rounded text-xs font-mono border transition-all
+                            ${selectedTestOutput === output.id
+                              ? 'bg-primary text-white border-primary' 
+                              : 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-400'
+                            }`}
+                        >
+                          {output.id.toString().padStart(2, '0')}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <div className="text-xs text-gray-300 font-mono">MODO DE TESTE:</div>
+                    <div className="grid grid-cols-2 gap-1">
+                      {[
+                        { mode: 'off', label: 'DESLIGAR', color: 'bg-gray-600' },
+                        { mode: 'rgb', label: 'RGB FIXO', color: 'bg-red-600' },
+                        { mode: 'rainbow', label: 'RAINBOW', color: 'bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500' },
+                        { mode: 'chase', label: 'CHASE', color: 'bg-blue-600' }
+                      ].map((test) => (
+                        <button
+                          key={test.mode}
+                          onClick={() => setTestMode(test.mode as any)}
+                          className={`p-2 rounded text-xs font-mono border transition-all text-white
+                            ${testMode === test.mode
+                              ? 'border-white shadow-md' 
+                              : 'border-gray-600 hover:border-gray-400'
+                            } ${test.color}`}
+                        >
+                          {test.label}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {testMode !== 'off' && (
+                      <div className="p-2 bg-blue-900/30 rounded border border-blue-600">
+                        <div className="text-blue-300 text-xs font-mono text-center">
+                          🧪 TESTANDO SAÍDA {selectedTestOutput.toString().padStart(2, '0')} • MODO: {testMode.toUpperCase()}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="p-2 bg-yellow-900/30 rounded border border-yellow-600">
+                    <div className="text-yellow-300 text-xs font-mono text-center">
+                      ⚠️ TESTE INDIVIDUAL POR SAÍDA FÍSICA • RGB/RAINBOW/CHASE
                     </div>
                   </div>
                 </div>
