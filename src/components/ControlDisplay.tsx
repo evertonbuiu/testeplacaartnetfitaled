@@ -457,17 +457,18 @@ export function ControlDisplay({
                               <div className="flex items-center gap-1">
                                 <span className="text-xs text-gray-300">Univ:</span>
                                 <input
-                                  type="number"
-                                  value={output.universes}
-                                  onChange={(e) => {
-                                    const newOutputs = [...outputs];
-                                    newOutputs[index].universes = parseInt(e.target.value) || 1;
-                                    setOutputs(newOutputs);
-                                  }}
-                                  className="w-12 p-1 bg-gray-700 text-white border border-gray-600 rounded text-xs font-mono"
-                                  min="1"
-                                  max="32"
-                                />
+                                   type="number"
+                                   value={output.universes}
+                                   onChange={(e) => {
+                                     const newOutputs = [...outputs];
+                                     const value = parseInt(e.target.value) || 1;
+                                     newOutputs[index].universes = Math.min(Math.max(value, 1), 8);
+                                     setOutputs(newOutputs);
+                                   }}
+                                   className="w-12 p-1 bg-gray-700 text-white border border-gray-600 rounded text-xs font-mono"
+                                   min="1"
+                                   max="8"
+                                 />
                               </div>
                             </div>
                             
