@@ -85,6 +85,7 @@ export function ControlDisplay({
   const [testMode, setTestMode] = useState<'off' | 'rgb' | 'rainbow' | 'chase'>('off');
   const [selectedTestOutput, setSelectedTestOutput] = useState(1);
   const [manualRGB, setManualRGB] = useState({ r: 255, g: 0, b: 0 });
+  const [testAllOutputs, setTestAllOutputs] = useState(false);
   const [outputs, setOutputs] = useState<OutputConfig[]>(() => {
     const outputArray: OutputConfig[] = [];
     for (let i = 1; i <= 32; i++) {
@@ -536,13 +537,29 @@ export function ControlDisplay({
                   
                   <div className="space-y-2">
                     <div className="text-xs text-gray-300 font-mono">SELECIONAR SAÍDA:</div>
-                    <div className="grid grid-cols-4 gap-1 max-h-32 overflow-y-auto">
+                    <div className="grid grid-cols-4 gap-1 max-h-24 overflow-y-auto">
+                      <button
+                        onClick={() => {
+                          setTestAllOutputs(true);
+                          setSelectedTestOutput(0);
+                        }}
+                        className={`p-2 rounded text-xs font-mono border transition-all
+                          ${testAllOutputs
+                            ? 'bg-yellow-600 text-white border-yellow-400' 
+                            : 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-400'
+                          }`}
+                      >
+                        TODAS
+                      </button>
                       {outputs.map((output) => (
                         <button
                           key={output.id}
-                          onClick={() => setSelectedTestOutput(output.id)}
+                          onClick={() => {
+                            setTestAllOutputs(false);
+                            setSelectedTestOutput(output.id);
+                          }}
                           className={`p-2 rounded text-xs font-mono border transition-all
-                            ${selectedTestOutput === output.id
+                            ${!testAllOutputs && selectedTestOutput === output.id
                               ? 'bg-primary text-white border-primary' 
                               : 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-400'
                             }`}
@@ -631,14 +648,14 @@ export function ControlDisplay({
                       </div>
                     )}
                     
-                    {testMode !== 'off' && (
-                      <div className="p-2 bg-blue-900/30 rounded border border-blue-600">
-                        <div className="text-blue-300 text-xs font-mono text-center">
-                          🧪 TESTANDO SAÍDA {selectedTestOutput.toString().padStart(2, '0')} • MODO: {testMode.toUpperCase()}
-                          {testMode === 'rgb' && ` • RGB(${manualRGB.r},${manualRGB.g},${manualRGB.b})`}
-                        </div>
-                      </div>
-                    )}
+                     {testMode !== 'off' && (
+                       <div className="p-2 bg-blue-900/30 rounded border border-blue-600">
+                         <div className="text-blue-300 text-xs font-mono text-center">
+                           🧪 TESTANDO {testAllOutputs ? 'TODAS AS SAÍDAS' : `SAÍDA ${selectedTestOutput.toString().padStart(2, '0')}`} • MODO: {testMode.toUpperCase()}
+                           {testMode === 'rgb' && ` • RGB(${manualRGB.r},${manualRGB.g},${manualRGB.b})`}
+                         </div>
+                       </div>
+                     )}
                   </div>
                   
                   <div className="p-2 bg-yellow-900/30 rounded border border-yellow-600">
