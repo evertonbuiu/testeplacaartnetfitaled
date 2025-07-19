@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Zap, Cpu, HardDrive, FileText } from 'lucide-react';
+import { Zap, Cpu, HardDrive, FileText, Microchip } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface OutputConfig {
@@ -75,11 +75,17 @@ export default function LEDController() {
               ART-NET ATIVO
             </Badge>
           </div>
-          <div className="flex justify-center mt-4">
+          <div className="flex justify-center gap-3 mt-4">
             <Button asChild variant="outline" className="font-mono">
               <Link to="/schematic">
                 <FileText className="w-4 h-4 mr-2" />
                 VER ESQUEMA ELÉTRICO
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="font-mono">
+              <Link to="/pcb">
+                <Microchip className="w-4 h-4 mr-2" />
+                VER PLACA PCB
               </Link>
             </Button>
           </div>
