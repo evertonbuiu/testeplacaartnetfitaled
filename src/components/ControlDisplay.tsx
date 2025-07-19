@@ -21,7 +21,9 @@ import {
   Square,
   RotateCcw,
   Zap,
-  Activity
+  Activity,
+  Factory,
+  RotateCcw as Reset
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -113,6 +115,54 @@ export function ControlDisplay({
     return outputArray;
   });
   const [selectedOutput, setSelectedOutput] = useState(0);
+
+  // Funções do sistema
+  const handleSystemReset = () => {
+    toast({
+      title: "Sistema Reiniciado",
+      description: "Controller reiniciado com sucesso",
+    });
+  };
+
+  const handleFactoryDefault = () => {
+    // Reset all configurations to factory defaults
+    setTempConfig({
+      ip: '192.168.1.100',
+      subnet: '255.255.255.0',
+      gateway: '192.168.1.1',
+      mode: 'auto'
+    });
+    setTempICConfig({
+      type: 'WS2811',
+      frequency: '800kHz',
+      colorOrder: 'GRB',
+      voltage: '5V',
+      pixelsPerMeter: 60
+    });
+    setTestMode('off');
+    setSelectedEffect('rainbow');
+    setEffectSpeed(50);
+    setEffectDirection('forward');
+    
+    // Reset outputs to default
+    const defaultOutputs: OutputConfig[] = [];
+    for (let i = 1; i <= 32; i++) {
+      defaultOutputs.push({
+        id: i,
+        enabled: i <= 8,
+        universes: 1,
+        startUniverse: i,
+        pixelsPerUniverse: 170,
+        name: `SAÍDA ${i.toString().padStart(2, '0')}`
+      });
+    }
+    setOutputs(defaultOutputs);
+    
+    toast({
+      title: "Configurações de Fábrica Restauradas",
+      description: "Todas as configurações foram restauradas aos valores padrão",
+    });
+  };
 
   // Atualizar relógio
   useEffect(() => {
@@ -946,6 +996,80 @@ export function ControlDisplay({
                         ? `CHASE DUAL COLOR • ${customChase.blockSize}px blocos • ${customChase.pixelSpacing}px espaço`
                         : `${selectedEffect.toUpperCase()} • VEL: ${effectSpeed}% • DIR: ${effectDirection === 'forward' ? '→' : '←'}`
                       }
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Menu Sistema */}
+              {currentMenu === 'system_info' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-white font-bold font-mono">INFORMAÇÕES DO SISTEMA</h3>
+                    <button 
+                      onClick={() => setCurrentMenu('main')}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <Home className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="p-2 bg-gray-800/50 rounded border border-gray-600">
+                        <div className="text-xs text-gray-300 font-mono">MODELO:</div>
+                        <div className="text-white text-sm font-bold font-mono">LED CTRL PRO 32</div>
+                      </div>
+                      <div className="p-2 bg-gray-800/50 rounded border border-gray-600">
+                        <div className="text-xs text-gray-300 font-mono">FIRMWARE:</div>
+                        <div className="text-white text-sm font-bold font-mono">v2.1.3</div>
+                      </div>
+                      <div className="p-2 bg-gray-800/50 rounded border border-gray-600">
+                        <div className="text-xs text-gray-300 font-mono">UPTIME:</div>
+                        <div className="text-white text-sm font-bold font-mono">72h 15m</div>
+                      </div>
+                      <div className="p-2 bg-gray-800/50 rounded border border-gray-600">
+                        <div className="text-xs text-gray-300 font-mono">TEMP:</div>
+                        <div className="text-green-400 text-sm font-bold font-mono">45°C</div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-2 bg-blue-900/30 rounded border border-blue-600">
+                      <div className="text-blue-300 text-xs font-mono text-center">
+                        💾 MEMÓRIA: 156KB / 512KB • 📡 ETHERNET: 1000Mbps FULL DUPLEX
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2 border-t border-gray-600 pt-2">
+                      <div className="text-xs text-yellow-400 font-mono text-center">CONFIGURAÇÕES DO SISTEMA:</div>
+                      
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={handleSystemReset}
+                          className="p-3 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white rounded font-mono text-sm transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+                        >
+                          <Reset className="w-4 h-4" />
+                          RESET SISTEMA
+                        </button>
+                        
+                        <button
+                          onClick={handleFactoryDefault}
+                          className="p-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded font-mono text-sm transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+                        >
+                          <Factory className="w-4 h-4" />
+                          PADRÃO FÁBRICA
+                        </button>
+                      </div>
+                      
+                      <div className="text-xs text-red-400 font-mono text-center bg-red-900/20 p-2 rounded border border-red-600">
+                        ⚠️ ATENÇÃO: PADRÃO FÁBRICA APAGA TODAS AS CONFIGURAÇÕES PERSONALIZADAS
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-2 bg-gradient-to-r from-gray-900/30 to-blue-900/30 rounded border border-gray-600">
+                    <div className="text-gray-300 text-xs font-mono text-center">
+                      🔧 SISTEMA ESTÁVEL • CPU: 23% • RAM: 30% • TEMP: NORMAL
                     </div>
                   </div>
                 </div>
