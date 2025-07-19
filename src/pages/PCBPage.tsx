@@ -1,6 +1,6 @@
 import { PCBView } from '@/components/PCBView';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, FileText, Monitor } from 'lucide-react';
+import { ArrowLeft, FileText, Monitor, Cable } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function PCBPage() {
@@ -16,7 +16,7 @@ export default function PCBPage() {
             </Link>
           </Button>
           <h1 className="text-2xl font-bold text-primary font-mono">
-            PLACA PCB - SISTEMA WS2811
+            PLACA CENTRAL - SISTEMA WS2811
           </h1>
         </div>
         
@@ -31,6 +31,12 @@ export default function PCBPage() {
             <Link to="/display-pcb">
               <Monitor className="w-4 h-4 mr-2" />
               Ver Placa Display
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link to="/output-pcb">
+              <Cable className="w-4 h-4 mr-2" />
+              Ver Placas de Saída
             </Link>
           </Button>
         </div>

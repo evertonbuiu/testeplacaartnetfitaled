@@ -1,25 +1,26 @@
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, Maximize2, Zap, Cpu } from 'lucide-react';
-import mainPcbImage from '@/assets/main-pcb-board.jpg';
+import { Download, Maximize2, Zap, Cpu, Cable } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import centralPcbImage from '@/assets/central-pcb-board.jpg';
 
 export function PCBView() {
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = mainPcbImage;
-    link.download = 'placa-pcb-principal-ws2811.jpg';
+    link.href = centralPcbImage;
+    link.download = 'placa-central-controlador-ws2811.jpg';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   const handleFullscreen = () => {
-    window.open(mainPcbImage, '_blank');
+    window.open(centralPcbImage, '_blank');
   };
 
   const pcbSpecs = [
-    { label: 'DIMENSÕES', value: '160mm x 120mm' },
+    { label: 'DIMENSÕES', value: '200mm x 160mm' },
     { label: 'CAMADAS', value: '4 Layer PCB' },
     { label: 'ESPESSURA', value: '1.6mm' },
     { label: 'ACABAMENTO', value: 'HASL Lead-Free' },
@@ -28,14 +29,16 @@ export function PCBView() {
   ];
 
   const components = [
-    { name: 'Microcontrolador Principal', qty: '1x', type: 'STM32F4' },
-    { name: 'Drivers WS2811', qty: '32x', type: 'SN74HCT245' },
-    { name: 'Conectores RJ45', qty: '2x', type: 'Ethernet' },
-    { name: 'Reguladores de Tensão', qty: '3x', type: '5V/3.3V' },
-    { name: 'Conector Cabo Flat', qty: '1x', type: '20-Pin FFC' },
-    { name: 'LEDs de Status', qty: '4x', type: 'SMD 0805' },
-    { name: 'Conectores de Saída', qty: '32x', type: '3-Pin JST' },
-    { name: 'Capacitores de Filtro', qty: '16x', type: 'SMD 1206' }
+    { name: 'Microcontrolador Principal', qty: '1x', type: 'STM32F407' },
+    { name: 'Conectores RJ45', qty: '2x', type: 'Ethernet Gigabit' },
+    { name: 'Reguladores de Tensão', qty: '4x', type: '5V/3.3V/1.8V' },
+    { name: 'Conectores Cabo Flat', qty: '4x', type: '20-Pin FFC' },
+    { name: 'Conector Display', qty: '1x', type: '20-Pin FFC' },
+    { name: 'LEDs de Status', qty: '8x', type: 'SMD 0805' },
+    { name: 'Circuito de Reset', qty: '1x', type: 'Supervisor' },
+    { name: 'Cristal Oscilador', qty: '2x', type: '25MHz/32kHz' },
+    { name: 'Capacitores de Filtro', qty: '24x', type: 'SMD 1206' },
+    { name: 'Conectores de Alimentação', qty: '2x', type: 'Terminal Block' }
   ];
 
   return (
@@ -45,10 +48,10 @@ export function PCBView() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-primary font-mono mb-2">
-              PLACA PRINCIPAL - CONTROLADOR WS2811
+              PLACA CENTRAL - CONTROLADOR WS2811
             </h2>
             <p className="text-muted-foreground font-mono">
-              Placa principal com conexão para módulo de display via cabo flat
+              Controle central com conexões para 4 placas de saída + display via cabo flat
             </p>
           </div>
           <div className="flex gap-2">
@@ -81,7 +84,7 @@ export function PCBView() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-accent font-mono">
-                  PLACA PRINCIPAL (SEM DISPLAY)
+                  PLACA CENTRAL (CONTROLE + REDE)
                 </h3>
                 <Badge variant="outline" className="font-mono">
                   4 CAMADAS
@@ -90,15 +93,15 @@ export function PCBView() {
 
               <div className="border-2 border-border rounded-lg overflow-hidden bg-background p-4">
                 <img
-                  src={mainPcbImage}
-                  alt="Placa Principal do Controlador WS2811"
+                  src={centralPcbImage}
+                  alt="Placa Central do Controlador WS2811"
                   className="w-full h-auto object-contain rounded"
                   style={{ maxHeight: '500px' }}
                 />
               </div>
 
               <div className="text-xs text-muted-foreground font-mono text-center">
-                PLACA PRINCIPAL | CONEXÃO CABO FLAT | DESIGN MODULAR
+                PLACA CENTRAL | 5 CONEXÕES CABO FLAT | DESIGN MODULAR
               </div>
             </div>
           </Card>
@@ -153,12 +156,22 @@ export function PCBView() {
               CARACTERÍSTICAS TÉCNICAS
             </h4>
             <div className="space-y-1 text-xs font-mono text-muted-foreground">
-              <div>• Tensão de alimentação: 5V DC</div>
-              <div>• Corrente máxima: 20A</div>
+              <div>• Tensão de alimentação: 12V DC</div>
+              <div>• Corrente interna: 2A (controle)</div>
               <div>• Temperatura operacional: -20°C a +70°C</div>
               <div>• Protocolo: ART-NET sobre Ethernet</div>
               <div>• Taxa de atualização: 40 FPS</div>
-              <div>• Resolução: 512 canais por universo</div>
+              <div>• Conexões cabo flat: 5 portas</div>
+            </div>
+            
+            {/* Botão para ver placas de saída */}
+            <div className="mt-4 pt-2 border-t">
+              <Button asChild variant="outline" size="sm" className="w-full font-mono">
+                <Link to="/output-pcb">
+                  <Cable className="w-4 h-4 mr-2" />
+                  VER PLACAS DE SAÍDA
+                </Link>
+              </Button>
             </div>
           </Card>
         </div>
