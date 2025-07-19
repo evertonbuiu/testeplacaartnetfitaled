@@ -84,6 +84,7 @@ export function ControlDisplay({
   const [currentTime, setCurrentTime] = useState(new Date());
   const [testMode, setTestMode] = useState<'off' | 'rgb' | 'rainbow' | 'chase'>('off');
   const [selectedTestOutput, setSelectedTestOutput] = useState(1);
+  const [manualRGB, setManualRGB] = useState({ r: 255, g: 0, b: 0 });
   const [outputs, setOutputs] = useState<OutputConfig[]>(() => {
     const outputArray: OutputConfig[] = [];
     for (let i = 1; i <= 32; i++) {
@@ -536,7 +537,7 @@ export function ControlDisplay({
                   <div className="space-y-2">
                     <div className="text-xs text-gray-300 font-mono">SELECIONAR SAÍDA:</div>
                     <div className="grid grid-cols-4 gap-1 max-h-32 overflow-y-auto">
-                      {outputs.filter(o => o.enabled).map((output) => (
+                      {outputs.map((output) => (
                         <button
                           key={output.id}
                           onClick={() => setSelectedTestOutput(output.id)}
@@ -573,10 +574,68 @@ export function ControlDisplay({
                       ))}
                     </div>
                     
+                    {testMode === 'rgb' && (
+                      <div className="space-y-2">
+                        <div className="text-xs text-gray-300 font-mono">CONTROLE RGB MANUAL:</div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="space-y-1">
+                            <div className="text-xs text-red-400 font-mono">R: {manualRGB.r}</div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="255"
+                              value={manualRGB.r}
+                              onChange={(e) => setManualRGB(prev => ({ ...prev, r: parseInt(e.target.value) }))}
+                              className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                              style={{
+                                background: `linear-gradient(to right, #000 0%, #ff0000 100%)`
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <div className="text-xs text-green-400 font-mono">G: {manualRGB.g}</div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="255"
+                              value={manualRGB.g}
+                              onChange={(e) => setManualRGB(prev => ({ ...prev, g: parseInt(e.target.value) }))}
+                              className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                              style={{
+                                background: `linear-gradient(to right, #000 0%, #00ff00 100%)`
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <div className="text-xs text-blue-400 font-mono">B: {manualRGB.b}</div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="255"
+                              value={manualRGB.b}
+                              onChange={(e) => setManualRGB(prev => ({ ...prev, b: parseInt(e.target.value) }))}
+                              className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                              style={{
+                                background: `linear-gradient(to right, #000 0%, #0000ff 100%)`
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-center p-2 rounded border" style={{
+                          backgroundColor: `rgb(${manualRGB.r}, ${manualRGB.g}, ${manualRGB.b})`
+                        }}>
+                          <span className="text-white text-xs font-mono font-bold drop-shadow-lg">
+                            RGB({manualRGB.r}, {manualRGB.g}, {manualRGB.b})
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    
                     {testMode !== 'off' && (
                       <div className="p-2 bg-blue-900/30 rounded border border-blue-600">
                         <div className="text-blue-300 text-xs font-mono text-center">
                           🧪 TESTANDO SAÍDA {selectedTestOutput.toString().padStart(2, '0')} • MODO: {testMode.toUpperCase()}
+                          {testMode === 'rgb' && ` • RGB(${manualRGB.r},${manualRGB.g},${manualRGB.b})`}
                         </div>
                       </div>
                     )}
