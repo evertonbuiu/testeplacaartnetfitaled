@@ -1,10 +1,15 @@
+import { useState } from 'react';
 import { OutputPCBView } from '@/components/OutputPCBView';
+import { ConnectionDiagram } from '@/components/ConnectionDiagram';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, FileText, Monitor, Microchip, Cable } from 'lucide-react';
+import { ArrowLeft, FileText, Monitor, Microchip, Cable, Network, Layers } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function OutputPCBPage() {
+  const [currentView, setCurrentView] = useState<'boards' | 'connections'>('boards');
+  const [selectedBoard, setSelectedBoard] = useState(1);
+  
   const outputBoards = [
     { number: 1, range: '01-08' },
     { number: 2, range: '09-16' },
@@ -60,28 +65,57 @@ export default function OutputPCBPage() {
             4 Placas de Saída Independentes • 8 Saídas por Placa • Conectores BORN
           </p>
           <div className="flex justify-center gap-4 mt-4">
-            <div className="flex items-center gap-2 text-accent font-mono">
-              <Cable className="w-4 h-4" />
-              <span>CABO FLAT 20 PINOS</span>
-            </div>
-            <div className="flex items-center gap-2 text-primary font-mono">
-              <Microchip className="w-4 h-4" />
-              <span>32 SAÍDAS TOTAL</span>
-            </div>
+            <Button
+              variant={currentView === 'boards' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setCurrentView('boards')}
+              className="font-mono"
+            >
+              <Layers className="w-4 h-4 mr-2" />
+              PLACAS DE SAÍDA
+            </Button>
+            <Button
+              variant={currentView === 'connections' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setCurrentView('connections')}
+              className="font-mono"
+            >
+              <Network className="w-4 h-4 mr-2" />
+              DIAGRAMA CONEXÕES
+            </Button>
           </div>
         </div>
       </Card>
 
-      {/* Grid das Placas de Saída */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {outputBoards.map((board) => (
+      {currentView === 'connections' ? (
+        <ConnectionDiagram />
+      ) : (
+        <div className="space-y-6">
+          {/* Seletor de placas */}
+          <Card className="p-4 bg-card border border-border">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {outputBoards.map((board) => (
+                <Button
+                  key={board.number}
+                  variant={selectedBoard === board.number ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedBoard(board.number)}
+                  className="font-mono"
+                >
+                  <Cable className="w-3 h-3 mr-1" />
+                  PLACA #{board.number}
+                </Button>
+              ))}
+            </div>
+          </Card>
+
+          {/* Visualização da placa selecionada */}
           <OutputPCBView
-            key={board.number}
-            boardNumber={board.number}
-            outputRange={board.range}
+            boardNumber={selectedBoard}
+            outputRange={outputBoards[selectedBoard - 1].range}
           />
-        ))}
-      </div>
+        </div>
+      )}
 
       {/* Especificações do Sistema */}
       <Card className="p-6 bg-card border-2 border-accent">
