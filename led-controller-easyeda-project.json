@@ -1,0 +1,348 @@
+{
+  "head": {
+    "docType": "1",
+    "editorVersion": "6.5.30",
+    "newgId": true,
+    "c_para": {},
+    "hasIdFlag": true,
+    "c_spiceCmd": null
+  },
+  "canvas": "CA~1000~1000~#FFFFFF~yes~#CCCCCC~5~1000~1000~line~10~mil~1~45~visible~0.5~800~600",
+  "shape": [
+    "LIB~-400~-300~package`WS2812B-MINI`EasyEDA_Lib`588ca1dbbbc84be790a65b8b8cc0f114`~0~~gge1~0",
+    "LIB~-200~-300~package`ESP32-WROOM-32`EasyEDA_Lib`a355849ec9574bbabc5c9a95b2e9dc9d`~0~~gge2~0",
+    "LIB~0~-300~package`74HCT245PW`EasyEDA_Lib`7e1a8b2c3d4e5f6a7b8c9d0e1f2a3b4c`~0~~gge3~0",
+    "LIB~200~-300~package`SN74LVC1G125DCKR`EasyEDA_Lib`1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d`~0~~gge4~0",
+    "LIB~400~-300~package`ULN2803A`EasyEDA_Lib`2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e`~0~~gge5~0",
+    "LIB~-400~-100~package`AMS1117-3.3`EasyEDA_Lib`3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f`~0~~gge6~0",
+    "LIB~-200~-100~package`AMS1117-5.0`EasyEDA_Lib`4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a`~0~~gge7~0",
+    "LIB~0~-100~package`CP2102N-QFN28`EasyEDA_Lib`5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b`~0~~gge8~0",
+    "LIB~200~-100~package`TVS_ARRAY_4CH`EasyEDA_Lib`6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c`~0~~gge9~0",
+    "LIB~400~-100~package`Crystal_3225_4P`EasyEDA_Lib`7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d`~0~~gge10~0"
+  ],
+  "BBox": {
+    "x": -450,
+    "y": -350,
+    "width": 900,
+    "height": 300
+  },
+  "info": {
+    "title": "Sistema Controlador LED - Layout Completo",
+    "description": "Projeto completo do controlador LED com amplificadores para longas distâncias",
+    "version": "1.0",
+    "author": "Lovable AI",
+    "date": "2025-01-19",
+    "license": "MIT"
+  },
+  "project_specs": {
+    "main_controller": {
+      "mcu": "ESP32-WROOM-32",
+      "flash": "4MB",
+      "ram": "520KB",
+      "wifi": "802.11 b/g/n",
+      "bluetooth": "BLE 4.2",
+      "gpio_pins": 36,
+      "operating_voltage": "3.3V",
+      "input_voltage": "3.0V-3.6V"
+    },
+    "display_unit": {
+      "display": "SSD1306 OLED 128x64",
+      "interface": "I2C",
+      "backlight": "Built-in",
+      "viewing_angle": "160°",
+      "operating_temp": "-40°C to +85°C"
+    },
+    "output_boards": {
+      "quantity": 8,
+      "outputs_per_board": 8,
+      "total_outputs": 64,
+      "amplification": "74HCT245 Octal Bus Transceiver",
+      "isolation": "SN74LVC1G125 Buffer Gates",
+      "drivers": "ULN2803 Darlington Arrays",
+      "max_distance": "100m",
+      "supported_voltages": ["5V", "12V", "24V"]
+    },
+    "power_system": {
+      "input": "12V-24V DC",
+      "regulators": ["5V/5A", "3.3V/1A"],
+      "protection": "Fuse + TVS Diodes",
+      "efficiency": ">85%",
+      "max_current": "20A total"
+    }
+  },
+  "components_bom": [
+    {
+      "designator": "U1",
+      "package": "ESP32-WROOM-32",
+      "description": "Microcontrolador principal WiFi/BLE",
+      "manufacturer": "Espressif",
+      "part_number": "ESP32-WROOM-32D",
+      "quantity": 1,
+      "price_unit": 4.50,
+      "datasheet": "https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32d_esp32-wroom-32u_datasheet_en.pdf"
+    },
+    {
+      "designator": "U2",
+      "package": "SSD1306",
+      "description": "Display OLED 128x64 I2C",
+      "manufacturer": "Solomon Systech",
+      "part_number": "SSD1306",
+      "quantity": 1,
+      "price_unit": 3.20,
+      "datasheet": "https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf"
+    },
+    {
+      "designator": "U3-U6",
+      "package": "TSSOP-20",
+      "description": "Amplificador Octal Bus 74HCT245",
+      "manufacturer": "Texas Instruments",
+      "part_number": "74HCT245PW",
+      "quantity": 32,
+      "price_unit": 0.45,
+      "datasheet": "https://www.ti.com/lit/ds/symlink/sn74hct245.pdf"
+    },
+    {
+      "designator": "U7-U14",
+      "package": "SC-70-5",
+      "description": "Buffer Gate SN74LVC1G125",
+      "manufacturer": "Texas Instruments", 
+      "part_number": "SN74LVC1G125DCKR",
+      "quantity": 64,
+      "price_unit": 0.25,
+      "datasheet": "https://www.ti.com/lit/ds/symlink/sn74lvc1g125.pdf"
+    },
+    {
+      "designator": "U15-U30",
+      "package": "DIP-18",
+      "description": "Driver Darlington ULN2803",
+      "manufacturer": "STMicroelectronics",
+      "part_number": "ULN2803A",
+      "quantity": 16,
+      "price_unit": 0.85,
+      "datasheet": "https://www.st.com/resource/en/datasheet/uln2803a.pdf"
+    },
+    {
+      "designator": "REG1",
+      "package": "SOT-223",
+      "description": "Regulador 5V/5A AMS1117",
+      "manufacturer": "Advanced Monolithic Systems",
+      "part_number": "AMS1117-5.0",
+      "quantity": 8,
+      "price_unit": 0.35,
+      "datasheet": "https://www.advanced-monolithic.com/pdf/ds1117.pdf"
+    },
+    {
+      "designator": "REG2",
+      "package": "SOT-223", 
+      "description": "Regulador 3.3V/1A AMS1117",
+      "manufacturer": "Advanced Monolithic Systems",
+      "part_number": "AMS1117-3.3",
+      "quantity": 1,
+      "price_unit": 0.35,
+      "datasheet": "https://www.advanced-monolithic.com/pdf/ds1117.pdf"
+    },
+    {
+      "designator": "U31",
+      "package": "QFN-28",
+      "description": "USB to UART Bridge CP2102N",
+      "manufacturer": "Silicon Labs",
+      "part_number": "CP2102N-A01-GQFN28",
+      "quantity": 1,
+      "price_unit": 2.80,
+      "datasheet": "https://www.silabs.com/documents/public/data-sheets/cp2102n-datasheet.pdf"
+    },
+    {
+      "designator": "Y1",
+      "package": "3225",
+      "description": "Crystal 25MHz ±20ppm",
+      "manufacturer": "TXC Corporation",
+      "part_number": "7M-25.000MAAE-T",
+      "quantity": 8,
+      "price_unit": 0.65,
+      "datasheet": "https://www.txccorp.com/download/product/pdf/7M_u.pdf"
+    },
+    {
+      "designator": "D1-D64",
+      "package": "SOT-143-4",
+      "description": "TVS Diode Array 4CH 5V",
+      "manufacturer": "Littelfuse",
+      "part_number": "SP3004-04UTG",
+      "quantity": 64,
+      "price_unit": 0.45,
+      "datasheet": "https://www.littelfuse.com/~/media/electronics/datasheets/tvs_diode_arrays/littelfuse_tvs_diode_array_sp3004_datasheet.pdf.pdf"
+    },
+    {
+      "designator": "J1-J64",
+      "package": "Terminal_Block_4P",
+      "description": "Conector Borne 4 Pinos 5.08mm",
+      "manufacturer": "Phoenix Contact",
+      "part_number": "1935161",
+      "quantity": 64,
+      "price_unit": 1.20,
+      "datasheet": "https://www.phoenixcontact.com/online/portal/us?1dmy&urile=wcm%3apath%3a/usen/web/main/products/subcategory_pages/terminal_blocks_pt_5/id.htm"
+    },
+    {
+      "designator": "J65-J72",
+      "package": "FFC_20P",
+      "description": "Conector Cabo Flat 20 Pinos 1mm",
+      "manufacturer": "Molex",
+      "part_number": "52793-2070",
+      "quantity": 8,
+      "price_unit": 0.85,
+      "datasheet": "https://www.molex.com/pdm_docs/sd/527932070_sd.pdf"
+    },
+    {
+      "designator": "T1-T64",
+      "package": "SMD_Transformer",
+      "description": "Transformador de Pulso 1:1 25MHz",
+      "manufacturer": "Würth Elektronik",
+      "part_number": "750315371",
+      "quantity": 64,
+      "price_unit": 2.15,
+      "datasheet": "https://www.we-online.com/catalog/datasheet/750315371.pdf"
+    }
+  ],
+  "pcb_specifications": {
+    "main_board": {
+      "dimensions": "100mm x 80mm",
+      "layers": 4,
+      "thickness": "1.6mm",
+      "material": "FR-4",
+      "surface_finish": "HASL Lead-Free",
+      "solder_mask": "Green",
+      "silkscreen": "White",
+      "min_trace_width": "0.1mm",
+      "min_via_size": "0.2mm",
+      "copper_thickness": "35µm"
+    },
+    "display_board": {
+      "dimensions": "60mm x 40mm", 
+      "layers": 2,
+      "thickness": "1.6mm",
+      "material": "FR-4",
+      "surface_finish": "HASL Lead-Free",
+      "solder_mask": "Black",
+      "silkscreen": "White"
+    },
+    "output_board": {
+      "dimensions": "200mm x 50mm",
+      "layers": 4,
+      "thickness": "1.6mm", 
+      "material": "FR-4",
+      "surface_finish": "HASL Lead-Free",
+      "solder_mask": "Green",
+      "silkscreen": "White",
+      "mounting": "DIN Rail + Screw Holes"
+    }
+  },
+  "led_protocols_supported": [
+    {
+      "protocol": "WS2811",
+      "pins": 3,
+      "voltage": ["5V", "12V", "24V"],
+      "speed": "800kHz",
+      "data_format": "GRB 24-bit"
+    },
+    {
+      "protocol": "WS2812B", 
+      "pins": 3,
+      "voltage": ["5V"],
+      "speed": "800kHz",
+      "data_format": "GRB 24-bit"
+    },
+    {
+      "protocol": "SK6812",
+      "pins": 3, 
+      "voltage": ["5V"],
+      "speed": "800kHz",
+      "data_format": "GRB 24-bit + W"
+    },
+    {
+      "protocol": "APA102",
+      "pins": 4,
+      "voltage": ["5V"],
+      "speed": "20MHz",
+      "data_format": "BGR 24-bit + Global"
+    },
+    {
+      "protocol": "SK9822",
+      "pins": 4,
+      "voltage": ["5V"],
+      "speed": "15MHz", 
+      "data_format": "BGR 24-bit + Global"
+    },
+    {
+      "protocol": "UCS1903",
+      "pins": 3,
+      "voltage": ["5V", "12V"],
+      "speed": "800kHz",
+      "data_format": "RGB 24-bit"
+    }
+  ],
+  "firmware_features": [
+    "WiFi Configuration Portal",
+    "Art-Net/sACN/E1.31 Support",
+    "Real-time LED Control",
+    "Web Interface Management", 
+    "OTA Firmware Updates",
+    "DMX512 Input/Output",
+    "Audio Reactive Mode",
+    "Pattern Generator",
+    "Color Correction",
+    "Gamma Correction",
+    "Temperature Monitoring",
+    "Power Management",
+    "LED Strip Auto-Detection",
+    "Multiple Universe Support",
+    "Pixel Mapping",
+    "Effect Library"
+  ],
+  "connection_specs": {
+    "max_distance": "100m",
+    "cable_type": "Cat6 Shielded",
+    "signal_integrity": "25MHz bandwidth", 
+    "isolation": "±2.5kV galvanic",
+    "esd_protection": "±15kV contact/air",
+    "temperature_range": "-40°C to +85°C",
+    "humidity": "5% to 95% non-condensing"
+  },
+  "performance_specs": {
+    "max_leds_per_output": 1000,
+    "total_max_leds": 64000,
+    "refresh_rate": "60Hz typical, 120Hz max",
+    "latency": "&lt;1ms",
+    "color_depth": "24-bit (16.7M colors)",
+    "dimming_resolution": "16-bit (65536 levels)",
+    "power_consumption": "20W typical, 50W max"
+  },
+  "manufacturing_notes": [
+    "Usar componentes industriais com temperatura estendida",
+    "Solda wave para componentes THT, reflow para SMD", 
+    "Teste de isolação obrigatório em todas as placas",
+    "Programação e calibração em linha de produção",
+    "Embalagem antiestática para transporte",
+    "Documentação completa incluída",
+    "Garantia de 2 anos para uso industrial"
+  ],
+  "assembly_instructions": [
+    "1. Montar placa principal com ESP32 e reguladores",
+    "2. Instalar e testar display OLED", 
+    "3. Montar placas de saída com amplificadores",
+    "4. Conectar cabos flat entre placas",
+    "5. Instalar em caixa com furação adequada",
+    "6. Conectar alimentação e testar isolação",
+    "7. Carregar firmware e configurar rede",
+    "8. Testar todas as saídas com fitas LED",
+    "9. Calibrar e documentar configuração final"
+  ],
+  "quality_control": [
+    "Teste de continuidade em 100% das placas",
+    "Verificação de isolação galvânica", 
+    "Teste de funcionamento com cargas reais",
+    "Medição de temperatura em operação",
+    "Teste de interferência eletromagnética",
+    "Verificação de conformidade CE/FCC",
+    "Teste de durabilidade (1000h mínimo)",
+    "Documentação de rastreabilidade completa"
+  ]
+}
