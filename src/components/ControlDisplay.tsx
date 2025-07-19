@@ -27,6 +27,15 @@ import { cn } from '@/lib/utils';
 
 type MenuState = 'main' | 'artnet' | 'network' | 'test' | 'effects' | 'settings' | 'ic_config' | 'system_info' | 'outputs_config';
 
+interface OutputConfig {
+  id: number;
+  enabled: boolean;
+  universes: number;
+  startUniverse: number;
+  pixelsPerUniverse: number;
+  name: string;
+}
+
 interface NetworkConfig {
   ip: string;
   subnet: string;
@@ -74,6 +83,13 @@ export function ControlDisplay({
   const [tempICConfig, setTempICConfig] = useState(icConfig);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [testMode, setTestMode] = useState<'off' | 'rgb' | 'rainbow' | 'chase'>('off');
+  const [outputs, setOutputs] = useState<OutputConfig[]>([
+    { id: 1, enabled: true, universes: 2, startUniverse: 1, pixelsPerUniverse: 170, name: 'SAÍDA 01' },
+    { id: 2, enabled: true, universes: 1, startUniverse: 3, pixelsPerUniverse: 170, name: 'SAÍDA 02' },
+    { id: 3, enabled: false, universes: 1, startUniverse: 4, pixelsPerUniverse: 170, name: 'SAÍDA 03' },
+    { id: 4, enabled: true, universes: 3, startUniverse: 5, pixelsPerUniverse: 170, name: 'SAÍDA 04' },
+  ]);
+  const [selectedOutput, setSelectedOutput] = useState(0);
 
   // Atualizar relógio
   useEffect(() => {
@@ -366,6 +382,129 @@ export function ControlDisplay({
                   <div className="p-2 bg-orange-900/30 rounded border border-orange-600">
                     <div className="text-orange-300 text-xs font-mono text-center">
                       🔧 {tempICConfig.type} • {tempICConfig.colorOrder} • {tempICConfig.voltage}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Menu Configuração de Saídas */}
+              {currentMenu === 'outputs_config' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-white font-bold font-mono">CONFIGURAÇÃO SAÍDAS</h3>
+                    <button 
+                      onClick={() => setCurrentMenu('main')}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <Home className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-2 max-h-44 overflow-y-auto">
+                    {outputs.map((output, index) => (
+                      <div 
+                        key={output.id} 
+                        className={`p-2 rounded border transition-all cursor-pointer
+                          ${selectedOutput === index 
+                            ? 'bg-purple-600/30 border-purple-400' 
+                            : 'bg-gray-800/50 border-gray-600 hover:border-gray-400'
+                          }`}
+                        onClick={() => setSelectedOutput(index)}
+                      >
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${output.enabled ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                            <span className="text-white text-xs font-mono">{output.name}</span>
+                          </div>
+                          <Badge 
+                            variant={output.enabled ? "default" : "secondary"}
+                            className="text-xs"
+                          >
+                            {output.enabled ? 'ATIVO' : 'INATIVO'}
+                          </Badge>
+                        </div>
+                        <div className="mt-1 text-xs text-gray-300 font-mono">
+                          Universos: {output.universes} • Início: {output.startUniverse} • Pixels/U: {output.pixelsPerUniverse}
+                        </div>
+                        
+                        {selectedOutput === index && (
+                          <div className="mt-2 space-y-2 border-t border-gray-600 pt-2">
+                            <div className="grid grid-cols-2 gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const newOutputs = [...outputs];
+                                  newOutputs[index].enabled = !newOutputs[index].enabled;
+                                  setOutputs(newOutputs);
+                                }}
+                                className={`p-1 rounded text-xs font-mono border transition-all
+                                  ${output.enabled 
+                                    ? 'bg-red-600 text-white border-red-400' 
+                                    : 'bg-green-600 text-white border-green-400'
+                                  }`}
+                              >
+                                {output.enabled ? 'DESATIVAR' : 'ATIVAR'}
+                              </button>
+                              
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-gray-300">Univ:</span>
+                                <input
+                                  type="number"
+                                  value={output.universes}
+                                  onChange={(e) => {
+                                    const newOutputs = [...outputs];
+                                    newOutputs[index].universes = parseInt(e.target.value) || 1;
+                                    setOutputs(newOutputs);
+                                  }}
+                                  className="w-12 p-1 bg-gray-700 text-white border border-gray-600 rounded text-xs font-mono"
+                                  min="1"
+                                  max="32"
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-gray-300">Início:</span>
+                                <input
+                                  type="number"
+                                  value={output.startUniverse}
+                                  onChange={(e) => {
+                                    const newOutputs = [...outputs];
+                                    newOutputs[index].startUniverse = parseInt(e.target.value) || 1;
+                                    setOutputs(newOutputs);
+                                  }}
+                                  className="w-12 p-1 bg-gray-700 text-white border border-gray-600 rounded text-xs font-mono"
+                                  min="1"
+                                  max="512"
+                                />
+                              </div>
+                              
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-gray-300">Pixels:</span>
+                                <input
+                                  type="number"
+                                  value={output.pixelsPerUniverse}
+                                  onChange={(e) => {
+                                    const newOutputs = [...outputs];
+                                    newOutputs[index].pixelsPerUniverse = parseInt(e.target.value) || 170;
+                                    setOutputs(newOutputs);
+                                  }}
+                                  className="w-12 p-1 bg-gray-700 text-white border border-gray-600 rounded text-xs font-mono"
+                                  min="1"
+                                  max="170"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="p-2 bg-purple-900/30 rounded border border-purple-600">
+                    <div className="text-purple-300 text-xs font-mono text-center">
+                      🔌 TOTAL: {outputs.filter(o => o.enabled).reduce((sum, o) => sum + o.universes, 0)} UNIVERSOS ATIVOS
                     </div>
                   </div>
                 </div>
