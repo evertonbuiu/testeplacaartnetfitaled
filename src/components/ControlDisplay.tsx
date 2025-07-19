@@ -86,6 +86,10 @@ export function ControlDisplay({
   const [selectedTestOutput, setSelectedTestOutput] = useState(1);
   const [manualRGB, setManualRGB] = useState({ r: 255, g: 0, b: 0 });
   const [testAllOutputs, setTestAllOutputs] = useState(false);
+  const [selectedEffect, setSelectedEffect] = useState('rainbow');
+  const [effectSpeed, setEffectSpeed] = useState(50);
+  const [effectDirection, setEffectDirection] = useState<'forward' | 'backward'>('forward');
+  const [effectColor, setEffectColor] = useState({ r: 255, g: 0, b: 0 });
   const [outputs, setOutputs] = useState<OutputConfig[]>(() => {
     const outputArray: OutputConfig[] = [];
     for (let i = 1; i <= 32; i++) {
@@ -661,6 +665,148 @@ export function ControlDisplay({
                   <div className="p-2 bg-yellow-900/30 rounded border border-yellow-600">
                     <div className="text-yellow-300 text-xs font-mono text-center">
                       ⚠️ TESTE INDIVIDUAL POR SAÍDA FÍSICA • RGB/RAINBOW/CHASE
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Menu Efeitos */}
+              {currentMenu === 'effects' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-white font-bold font-mono">EFEITOS PRONTOS</h3>
+                    <button 
+                      onClick={() => setCurrentMenu('main')}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <Home className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="text-xs text-gray-300 font-mono">SELECIONAR EFEITO:</div>
+                    <div className="grid grid-cols-1 gap-1 max-h-28 overflow-y-auto">
+                      {[
+                        { id: 'rainbow', name: 'RAINBOW CYCLE', icon: '🌈', color: 'bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500' },
+                        { id: 'chase', name: 'COLOR CHASE', icon: '🏃', color: 'bg-blue-600' },
+                        { id: 'fade', name: 'FADE IN/OUT', icon: '🌙', color: 'bg-purple-600' },
+                        { id: 'strobe', name: 'STROBE FLASH', icon: '⚡', color: 'bg-yellow-600' },
+                        { id: 'wipe', name: 'COLOR WIPE', icon: '🎨', color: 'bg-green-600' },
+                        { id: 'theater', name: 'THEATER CHASE', icon: '🎭', color: 'bg-pink-600' },
+                        { id: 'fire', name: 'FIRE EFFECT', icon: '🔥', color: 'bg-red-600' },
+                        { id: 'water', name: 'WATER WAVE', icon: '🌊', color: 'bg-cyan-600' },
+                        { id: 'matrix', name: 'MATRIX RAIN', icon: '💚', color: 'bg-emerald-600' },
+                        { id: 'sparkle', name: 'SPARKLE STARS', icon: '✨', color: 'bg-indigo-600' }
+                      ].map((effect) => (
+                        <button
+                          key={effect.id}
+                          onClick={() => setSelectedEffect(effect.id)}
+                          className={`p-2 rounded text-xs font-mono border transition-all text-white flex items-center gap-2
+                            ${selectedEffect === effect.id
+                              ? 'border-white shadow-md' 
+                              : 'border-gray-600 hover:border-gray-400'
+                            } ${effect.color}`}
+                        >
+                          <span>{effect.icon}</span>
+                          <span>{effect.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <div className="space-y-2 border-t border-gray-600 pt-2">
+                      <div className="text-xs text-gray-300 font-mono">CONFIGURAÇÕES:</div>
+                      
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-1">
+                          <div className="text-xs text-blue-400 font-mono">VELOCIDADE: {effectSpeed}%</div>
+                          <input
+                            type="range"
+                            min="1"
+                            max="100"
+                            value={effectSpeed}
+                            onChange={(e) => setEffectSpeed(parseInt(e.target.value))}
+                            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                          />
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <div className="text-xs text-purple-400 font-mono">DIREÇÃO:</div>
+                          <div className="grid grid-cols-2 gap-1">
+                            {['forward', 'backward'].map((direction) => (
+                              <button
+                                key={direction}
+                                onClick={() => setEffectDirection(direction as any)}
+                                className={`p-1 rounded text-xs font-mono border transition-all
+                                  ${effectDirection === direction
+                                    ? 'bg-purple-600 text-white border-purple-400' 
+                                    : 'bg-gray-700 text-gray-300 border-gray-600 hover:border-gray-400'
+                                  }`}
+                              >
+                                {direction === 'forward' ? '→' : '←'}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {['wipe', 'chase', 'theater', 'strobe'].includes(selectedEffect) && (
+                        <div className="space-y-1">
+                          <div className="text-xs text-green-400 font-mono">COR BASE:</div>
+                          <div className="grid grid-cols-3 gap-1">
+                            <div className="space-y-1">
+                              <div className="text-xs text-red-400 font-mono">R: {effectColor.r}</div>
+                              <input
+                                type="range"
+                                min="0"
+                                max="255"
+                                value={effectColor.r}
+                                onChange={(e) => setEffectColor(prev => ({ ...prev, r: parseInt(e.target.value) }))}
+                                className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <div className="text-xs text-green-400 font-mono">G: {effectColor.g}</div>
+                              <input
+                                type="range"
+                                min="0"
+                                max="255"
+                                value={effectColor.g}
+                                onChange={(e) => setEffectColor(prev => ({ ...prev, g: parseInt(e.target.value) }))}
+                                className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <div className="text-xs text-blue-400 font-mono">B: {effectColor.b}</div>
+                              <input
+                                type="range"
+                                min="0"
+                                max="255"
+                                value={effectColor.b}
+                                onChange={(e) => setEffectColor(prev => ({ ...prev, b: parseInt(e.target.value) }))}
+                                className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <button
+                        onClick={() => {
+                          toast({
+                            title: "Efeito Ativado",
+                            description: `${selectedEffect.toUpperCase()} executando a ${effectSpeed}% velocidade`,
+                          });
+                        }}
+                        className="w-full p-2 bg-green-600 hover:bg-green-700 text-white rounded font-mono text-sm transition-all"
+                      >
+                        ▶️ EXECUTAR EFEITO
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="p-2 bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded border border-purple-600">
+                    <div className="text-purple-300 text-xs font-mono text-center">
+                      ✨ {selectedEffect.toUpperCase()} • VEL: {effectSpeed}% • DIR: {effectDirection === 'forward' ? '→' : '←'}
                     </div>
                   </div>
                 </div>
