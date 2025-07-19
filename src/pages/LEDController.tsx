@@ -1,0 +1,192 @@
+import { useState, useEffect } from 'react';
+import { LEDOutput } from '@/components/LEDOutput';
+import { ControlDisplay } from '@/components/ControlDisplay';
+import { NetworkPanel } from '@/components/NetworkPanel';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Zap, Cpu, HardDrive, FileText } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+interface OutputConfig {
+  universes: number;
+  isActive: boolean;
+}
+
+export default function LEDController() {
+  const [outputs, setOutputs] = useState<OutputConfig[]>(
+    Array.from({ length: 32 }, () => ({ universes: 1, isActive: false }))
+  );
+  
+  const [artnetPackets, setArtnetPackets] = useState(0);
+  const [systemStats, setSystemStats] = useState({
+    temperature: 42,
+    voltage: 5.0,
+    current: 15.2
+  });
+
+  // Simula recebimento de pacotes ART-NET
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setArtnetPackets(prev => prev + Math.floor(Math.random() * 10) + 5);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleUniverseChange = (outputIndex: number, universes: number) => {
+    setOutputs(prev => prev.map((output, index) => 
+      index === outputIndex ? { ...output, universes } : output
+    ));
+  };
+
+  const handleOutputToggle = (outputIndex: number) => {
+    setOutputs(prev => prev.map((output, index) => 
+      index === outputIndex ? { ...output, isActive: !output.isActive } : output
+    ));
+  };
+
+  const totalUniverses = outputs.reduce((sum, output) => 
+    output.isActive ? sum + output.universes : sum, 0
+  );
+  
+  const activeOutputs = outputs.filter(output => output.isActive).length;
+
+  return (
+    <div className="min-h-screen bg-background p-4 space-y-6">
+      {/* Header */}
+      <Card className="p-6 bg-gradient-to-r from-card via-card to-card border-2 border-primary">
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-bold text-primary font-mono">
+            CONTROLADOR LED WS2811 - 32 SAÍDAS
+          </h1>
+          <p className="text-muted-foreground font-mono">
+            Sistema Profissional de Controle de Fitas LED via ART-NET
+          </p>
+          <div className="flex justify-center gap-4 mt-4">
+            <Badge variant="default" className="font-mono">
+              {activeOutputs} SAÍDAS ATIVAS
+            </Badge>
+            <Badge variant="secondary" className="font-mono">
+              {totalUniverses} UNIVERSOS TOTAL
+            </Badge>
+            <Badge variant="outline" className="font-mono">
+              ART-NET ATIVO
+            </Badge>
+          </div>
+          <div className="flex justify-center mt-4">
+            <Button asChild variant="outline" className="font-mono">
+              <Link to="/schematic">
+                <FileText className="w-4 h-4 mr-2" />
+                VER ESQUEMA ELÉTRICO
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Painel de Controle */}
+        <div className="lg:col-span-1 space-y-4">
+          <ControlDisplay
+            artnetStatus="connected"
+            universe={1}
+            subnet={0}
+          />
+          
+          <NetworkPanel
+            inputStatus="connected"
+            outputStatus="connected"
+            artnetPackets={artnetPackets}
+            dataRate="125 Mbps"
+          />
+
+          {/* Status do Sistema */}
+          <Card className="p-4 bg-card border-2 border-accent">
+            <h3 className="text-lg font-bold text-center text-accent mb-3">
+              STATUS DO SISTEMA
+            </h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-2 bg-background rounded border">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-led-orange" />
+                  <span className="text-xs font-mono">TEMPERATURA</span>
+                </div>
+                <span className="text-sm font-bold font-mono">{systemStats.temperature}°C</span>
+              </div>
+              
+              <div className="flex items-center justify-between p-2 bg-background rounded border">
+                <div className="flex items-center gap-2">
+                  <Cpu className="w-4 h-4 text-led-blue" />
+                  <span className="text-xs font-mono">TENSÃO</span>
+                </div>
+                <span className="text-sm font-bold font-mono">{systemStats.voltage}V</span>
+              </div>
+              
+              <div className="flex items-center justify-between p-2 bg-background rounded border">
+                <div className="flex items-center gap-2">
+                  <HardDrive className="w-4 h-4 text-led-green" />
+                  <span className="text-xs font-mono">CORRENTE</span>
+                </div>
+                <span className="text-sm font-bold font-mono">{systemStats.current}A</span>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Grid de Saídas LED */}
+        <div className="lg:col-span-3">
+          <Card className="p-6 bg-card border-2 border-primary">
+            <h2 className="text-xl font-bold text-center text-primary mb-4 font-mono">
+              SAÍDAS FÍSICAS WS2811
+            </h2>
+            <Separator className="mb-4" />
+            
+            <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+              {outputs.map((output, index) => (
+                <LEDOutput
+                  key={index}
+                  outputNumber={index + 1}
+                  universes={output.universes}
+                  isActive={output.isActive}
+                  onUniverseChange={(universes) => handleUniverseChange(index, universes)}
+                  onToggle={() => handleOutputToggle(index)}
+                />
+              ))}
+            </div>
+
+            {/* Resumo das Configurações */}
+            <Separator className="my-4" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div className="p-3 bg-background rounded border">
+                <div className="text-2xl font-bold text-primary font-mono">{activeOutputs}</div>
+                <div className="text-xs text-muted-foreground">SAÍDAS ATIVAS</div>
+              </div>
+              <div className="p-3 bg-background rounded border">
+                <div className="text-2xl font-bold text-accent font-mono">{totalUniverses}</div>
+                <div className="text-xs text-muted-foreground">UNIVERSOS</div>
+              </div>
+              <div className="p-3 bg-background rounded border">
+                <div className="text-2xl font-bold text-led-green font-mono">{artnetPackets}</div>
+                <div className="text-xs text-muted-foreground">PACOTES/SEC</div>
+              </div>
+              <div className="p-3 bg-background rounded border">
+                <div className="text-2xl font-bold text-led-orange font-mono">32</div>
+                <div className="text-xs text-muted-foreground">CANAIS TOTAL</div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <Card className="p-4 bg-card border border-border">
+        <div className="text-center text-xs text-muted-foreground font-mono">
+          SISTEMA DE CONTROLE LED WS2811 | PROTOCOLO ART-NET | 32 SAÍDAS × 8 UNIVERSOS | 
+          DESIGN PROFISSIONAL PARA ILUMINAÇÃO CÊNICA
+        </div>
+      </Card>
+    </div>
+  );
+}

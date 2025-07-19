@@ -61,6 +61,17 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				led: {
+					red: 'hsl(var(--led-red))',
+					green: 'hsl(var(--led-green))',
+					blue: 'hsl(var(--led-blue))',
+					orange: 'hsl(var(--led-orange))',
+					off: 'hsl(var(--led-off))'
+				},
+				artnet: {
+					active: 'hsl(var(--artnet-active))',
+					inactive: 'hsl(var(--artnet-inactive))'
 				}
 			},
 			borderRadius: {
