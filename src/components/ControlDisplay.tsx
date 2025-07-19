@@ -50,7 +50,7 @@ interface ICConfig {
   type: 'WS2811' | 'WS2812' | 'WS2812B' | 'SK6812' | 'APA102' | 'APA104' | 'UCS1903' | 'TM1809' | 'TM1804';
   frequency: string;
   colorOrder: 'RGB' | 'GRB' | 'RBG' | 'BRG' | 'BGR' | 'GBR';
-  voltage: '5V' | '12V';
+  voltage: '5V' | '12V' | '24V';
   pixelsPerMeter: number;
 }
 

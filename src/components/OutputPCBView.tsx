@@ -52,19 +52,19 @@ export function OutputPCBView({ boardNumber, outputRange }: OutputPCBViewProps) 
   ];
 
   const borneConnections = [
-    { pin: '1', signal: '+V', description: 'Alimentação LED (5V/12V)', color: 'text-red-500' },
+    { pin: '1', signal: '+V', description: 'Alimentação LED (5V/12V/24V)', color: 'text-red-500' },
     { pin: '2', signal: 'DATA', description: 'Sinal Digital WS281x', color: 'text-blue-500' },
     { pin: '3', signal: 'CLK', description: 'Clock (APA102/SK9822)', color: 'text-yellow-600' },
     { pin: '4', signal: 'GND', description: 'Terra/Negativo', color: 'text-gray-600' }
   ];
 
   const supportedLedTypes = [
-    { type: 'WS2811', pins: '3-Pin', connection: '+V, DATA, GND', voltage: '5V/12V' },
-    { type: 'WS2812B', pins: '3-Pin', connection: '+V, DATA, GND', voltage: '5V' },
-    { type: 'SK6812', pins: '3-Pin', connection: '+V, DATA, GND', voltage: '5V' },
-    { type: 'APA102', pins: '4-Pin', connection: '+V, DATA, CLK, GND', voltage: '5V' },
-    { type: 'SK9822', pins: '4-Pin', connection: '+V, DATA, CLK, GND', voltage: '5V' },
-    { type: 'UCS1903', pins: '3-Pin', connection: '+V, DATA, GND', voltage: '5V/12V' }
+    { type: 'WS2811', pins: '3-Pin', connection: '+V, DATA, GND', voltage: '5V/12V/24V' },
+    { type: 'WS2812B', pins: '3-Pin', connection: '+V, DATA, GND', voltage: '5V/12V' },
+    { type: 'SK6812', pins: '3-Pin', connection: '+V, DATA, GND', voltage: '5V/12V' },
+    { type: 'APA102', pins: '4-Pin', connection: '+V, DATA, CLK, GND', voltage: '5V/12V' },
+    { type: 'SK9822', pins: '4-Pin', connection: '+V, DATA, CLK, GND', voltage: '5V/12V' },
+    { type: 'UCS1903', pins: '3-Pin', connection: '+V, DATA, GND', voltage: '5V/12V/24V' }
   ];
 
   const getFilteredComponents = () => {
