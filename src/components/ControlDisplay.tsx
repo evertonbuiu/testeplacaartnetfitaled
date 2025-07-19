@@ -83,12 +83,20 @@ export function ControlDisplay({
   const [tempICConfig, setTempICConfig] = useState(icConfig);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [testMode, setTestMode] = useState<'off' | 'rgb' | 'rainbow' | 'chase'>('off');
-  const [outputs, setOutputs] = useState<OutputConfig[]>([
-    { id: 1, enabled: true, universes: 2, startUniverse: 1, pixelsPerUniverse: 170, name: 'SAÍDA 01' },
-    { id: 2, enabled: true, universes: 1, startUniverse: 3, pixelsPerUniverse: 170, name: 'SAÍDA 02' },
-    { id: 3, enabled: false, universes: 1, startUniverse: 4, pixelsPerUniverse: 170, name: 'SAÍDA 03' },
-    { id: 4, enabled: true, universes: 3, startUniverse: 5, pixelsPerUniverse: 170, name: 'SAÍDA 04' },
-  ]);
+  const [outputs, setOutputs] = useState<OutputConfig[]>(() => {
+    const outputArray: OutputConfig[] = [];
+    for (let i = 1; i <= 32; i++) {
+      outputArray.push({
+        id: i,
+        enabled: i <= 8, // Primeiras 8 saídas ativas por padrão
+        universes: 1,
+        startUniverse: i,
+        pixelsPerUniverse: 170,
+        name: `SAÍDA ${i.toString().padStart(2, '0')}`
+      });
+    }
+    return outputArray;
+  });
   const [selectedOutput, setSelectedOutput] = useState(0);
 
   // Atualizar relógio
