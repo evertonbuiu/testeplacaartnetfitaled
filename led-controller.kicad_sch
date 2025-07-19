@@ -304,8 +304,9 @@
       )
     )
   )
-    (symbol "Logic_74xx:74HCT245" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
-      (property "Reference" "U" (at -7.62 16.51 0)
+
+  (symbol (lib_id "Logic_74xx:74HCT245") (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
+    (property "Reference" "U" (at -7.62 16.51 0)
         (effects (font (size 1.27 1.27)))
       )
       (property "Value" "74HCT245" (at -7.62 -16.51 0)
