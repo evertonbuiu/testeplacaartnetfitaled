@@ -1,21 +1,25 @@
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, Maximize2, Monitor, Gamepad2 } from 'lucide-react';
-import displayPcbImage from '@/assets/display-pcb-board.jpg';
+import { Download, Maximize2, Monitor, Gamepad2, Layers, FlipHorizontal } from 'lucide-react';
+import displayPCBTop from '@/assets/display-pcb-top.jpg';
+import displayPCBBottom from '@/assets/display-pcb-bottom.jpg';
 
 export function DisplayPCBView() {
+  const [currentSide, setCurrentSide] = useState<'top' | 'bottom'>('top');
+  
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = displayPcbImage;
-    link.download = 'placa-display-ws2811-controller.jpg';
+    link.href = currentSide === 'top' ? displayPCBTop : displayPCBBottom;
+    link.download = `placa-display-${currentSide}-ws2811-controller.jpg`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   const handleFullscreen = () => {
-    window.open(displayPcbImage, '_blank');
+    window.open(currentSide === 'top' ? displayPCBTop : displayPCBBottom, '_blank');
   };
 
   const displaySpecs = [
@@ -28,13 +32,14 @@ export function DisplayPCBView() {
   ];
 
   const displayComponents = [
-    { name: 'Display LCD', qty: '1x', type: '16x2 Character' },
-    { name: 'Botões Tácteis', qty: '4x', type: '6mm SPST' },
-    { name: 'LEDs de Status', qty: '4x', type: 'SMD 0805' },
-    { name: 'Conector Cabo Flat', qty: '1x', type: '20-Pin FFC' },
-    { name: 'Resistores Pull-up', qty: '8x', type: '10kΩ SMD' },
-    { name: 'Capacitores Bypass', qty: '4x', type: '100nF SMD' },
-    { name: 'Regulador de Tensão', qty: '1x', type: '3.3V LDO' }
+    { name: 'Display LCD', qty: '1x', type: '20x4 Character', side: 'top' },
+    { name: 'Botões Tácteis', qty: '4x', type: '6mm SPST', side: 'top' },
+    { name: 'LEDs de Status', qty: '4x', type: 'SMD 0805', side: 'top' },
+    { name: 'Conector Cabo Flat', qty: '1x', type: '20-Pin FFC', side: 'both' },
+    { name: 'Resistores Pull-up', qty: '8x', type: '10kΩ SMD', side: 'bottom' },
+    { name: 'Capacitores Bypass', qty: '4x', type: '100nF SMD', side: 'bottom' },
+    { name: 'Regulador de Tensão', qty: '1x', type: '3.3V LDO', side: 'bottom' },
+    { name: 'Cristal Oscilador', qty: '1x', type: '16MHz SMD', side: 'bottom' }
   ];
 
   const connectionSpecs = [
@@ -47,20 +52,42 @@ export function DisplayPCBView() {
     { pin: '19-20', signal: 'SPI/I2C', description: 'Comunicação Serial' }
   ];
 
+  const getFilteredComponents = () => {
+    return displayComponents.filter(component => 
+      component.side === currentSide || component.side === 'both'
+    );
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header com controles */}
       <Card className="p-6 bg-gradient-to-r from-card via-card to-card border-2 border-accent">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-accent font-mono mb-2">
-              PLACA DISPLAY - PAINEL DE CONTROLE
+              PLACA DE DISPLAY E CONTROLE
             </h2>
             <p className="text-muted-foreground font-mono">
-              Módulo separado para display e controles via cabo flat
+              Visualização {currentSide === 'top' ? 'SUPERIOR' : 'INFERIOR'} - Conectada via Cabo Flat 20 Pinos
             </p>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant={currentSide === 'top' ? 'default' : 'outline'}
+              onClick={() => setCurrentSide('top')}
+              className="font-mono"
+            >
+              <Layers className="w-4 h-4 mr-2" />
+              LADO SUPERIOR
+            </Button>
+            <Button
+              variant={currentSide === 'bottom' ? 'default' : 'outline'}
+              onClick={() => setCurrentSide('bottom')}
+              className="font-mono"
+            >
+              <FlipHorizontal className="w-4 h-4 mr-2" />
+              LADO INFERIOR
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -84,26 +111,55 @@ export function DisplayPCBView() {
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Imagem da PCB Display */}
+        {/* Imagem da Placa */}
         <div className="lg:col-span-2">
           <Card className="p-4 bg-card border-2 border-accent">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-accent font-mono">
-                  PLACA DE DISPLAY E CONTROLES
+                  PCB DISPLAY - {currentSide === 'top' ? 'COMPONENTES' : 'SOLDAS E SMD'}
                 </h3>
                 <Badge variant="outline" className="font-mono">
-                  MÓDULO SEPARADO
+                  LADO {currentSide.toUpperCase()}
                 </Badge>
               </div>
 
-              <div className="border-2 border-border rounded-lg overflow-hidden bg-background p-4">
+              <div className="border-2 border-border rounded-lg overflow-hidden bg-background p-4 relative">
                 <img
-                  src={displayPcbImage}
-                  alt="Placa PCB do Display e Controles"
+                  src={currentSide === 'top' ? displayPCBTop : displayPCBBottom}
+                  alt={`Placa PCB do Display - Lado ${currentSide}`}
                   className="w-full h-auto object-contain rounded"
-                  style={{ maxHeight: '400px' }}
+                  style={{ maxHeight: '500px' }}
                 />
+                
+                {/* Overlays informativos */}
+                {currentSide === 'top' && (
+                  <>
+                    <div className="absolute top-6 left-6 bg-primary text-primary-foreground px-3 py-1 rounded font-mono text-sm">
+                      DISPLAY LCD 20x4
+                    </div>
+                    <div className="absolute top-6 right-6 bg-accent text-accent-foreground px-3 py-1 rounded font-mono text-sm">
+                      FLAT 20P
+                    </div>
+                    <div className="absolute bottom-6 left-6 bg-led-green text-background px-3 py-1 rounded font-mono text-sm">
+                      BOTÕES CONTROLE
+                    </div>
+                  </>
+                )}
+                
+                {currentSide === 'bottom' && (
+                  <>
+                    <div className="absolute top-6 left-6 bg-primary text-primary-foreground px-3 py-1 rounded font-mono text-sm">
+                      SMD COMPONENTS
+                    </div>
+                    <div className="absolute top-6 right-6 bg-accent text-accent-foreground px-3 py-1 rounded font-mono text-sm">
+                      TRACES & VIAS
+                    </div>
+                    <div className="absolute bottom-6 right-6 bg-led-orange text-background px-3 py-1 rounded font-mono text-sm">
+                      CONECTOR FLAT
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="text-xs text-muted-foreground font-mono text-center">
@@ -153,14 +209,14 @@ export function DisplayPCBView() {
             </div>
           </Card>
 
-          {/* Componentes da Placa Display */}
+          {/* Componentes da Placa Display - Filtrados por lado */}
           <Card className="p-4 bg-card border-2 border-primary">
             <h3 className="text-lg font-bold text-primary font-mono mb-3 flex items-center gap-2">
               <Gamepad2 className="w-5 h-5" />
-              COMPONENTES
+              COMPONENTES - LADO {currentSide.toUpperCase()}
             </h3>
             <div className="space-y-2 max-h-80 overflow-y-auto">
-              {displayComponents.map((component, index) => (
+              {getFilteredComponents().map((component, index) => (
                 <div key={index} className="p-2 bg-background rounded border">
                   <div className="flex justify-between items-start text-xs font-mono">
                     <span className="text-foreground font-medium flex-1">
@@ -190,6 +246,7 @@ export function DisplayPCBView() {
               <div>• Proteção contra interferências</div>
               <div>• Design compacto e profissional</div>
               <div>• Fácil substituição de componentes</div>
+              <div>• Visualização dos dois lados da PCB</div>
             </div>
           </Card>
         </div>
