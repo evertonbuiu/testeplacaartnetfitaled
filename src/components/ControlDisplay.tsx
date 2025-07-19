@@ -24,6 +24,7 @@ import {
   Activity
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 type MenuState = 'main' | 'artnet' | 'network' | 'test' | 'effects' | 'settings' | 'ic_config' | 'system_info' | 'outputs_config';
 
@@ -76,6 +77,7 @@ export function ControlDisplay({
   },
   onICConfigChange 
 }: ControlDisplayProps) {
+  const { toast } = useToast();
   const [currentMenu, setCurrentMenu] = useState<MenuState>('main');
   const [selectedOption, setSelectedOption] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
@@ -90,6 +92,12 @@ export function ControlDisplay({
   const [effectSpeed, setEffectSpeed] = useState(50);
   const [effectDirection, setEffectDirection] = useState<'forward' | 'backward'>('forward');
   const [effectColor, setEffectColor] = useState({ r: 255, g: 0, b: 0 });
+  const [customChase, setCustomChase] = useState({
+    color1: { r: 255, g: 0, b: 0 },
+    color2: { r: 0, g: 255, b: 0 },
+    pixelSpacing: 10,
+    blockSize: 5
+  });
   const [outputs, setOutputs] = useState<OutputConfig[]>(() => {
     const outputArray: OutputConfig[] = [];
     for (let i = 1; i <= 32; i++) {
@@ -689,6 +697,7 @@ export function ControlDisplay({
                       {[
                         { id: 'rainbow', name: 'RAINBOW CYCLE', icon: '🌈', color: 'bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500' },
                         { id: 'chase', name: 'COLOR CHASE', icon: '🏃', color: 'bg-blue-600' },
+                        { id: 'custom_chase', name: 'CHASE DUAL COLOR', icon: '🎯', color: 'bg-gradient-to-r from-orange-500 to-pink-500' },
                         { id: 'fade', name: 'FADE IN/OUT', icon: '🌙', color: 'bg-purple-600' },
                         { id: 'strobe', name: 'STROBE FLASH', icon: '⚡', color: 'bg-yellow-600' },
                         { id: 'wipe', name: 'COLOR WIPE', icon: '🎨', color: 'bg-green-600' },
@@ -788,25 +797,155 @@ export function ControlDisplay({
                             </div>
                           </div>
                         </div>
-                      )}
-                      
-                      <button
-                        onClick={() => {
-                          toast({
-                            title: "Efeito Ativado",
-                            description: `${selectedEffect.toUpperCase()} executando a ${effectSpeed}% velocidade`,
-                          });
-                        }}
-                        className="w-full p-2 bg-green-600 hover:bg-green-700 text-white rounded font-mono text-sm transition-all"
-                      >
-                        ▶️ EXECUTAR EFEITO
-                      </button>
+                       )}
+                       
+                       {selectedEffect === 'custom_chase' && (
+                         <div className="space-y-2">
+                           <div className="text-xs text-orange-400 font-mono">CHASE DUAL COLOR - CONFIGURAÇÕES:</div>
+                           
+                           <div className="grid grid-cols-2 gap-2">
+                             <div className="space-y-1">
+                               <div className="text-xs text-cyan-400 font-mono">COR 1 (BLOCO A):</div>
+                               <div className="grid grid-cols-3 gap-1">
+                                 <div>
+                                   <div className="text-xs text-red-400">R: {customChase.color1.r}</div>
+                                   <input
+                                     type="range"
+                                     min="0"
+                                     max="255"
+                                     value={customChase.color1.r}
+                                     onChange={(e) => setCustomChase(prev => ({ ...prev, color1: { ...prev.color1, r: parseInt(e.target.value) } }))}
+                                     className="w-full h-1 bg-gray-700 rounded appearance-none cursor-pointer"
+                                   />
+                                 </div>
+                                 <div>
+                                   <div className="text-xs text-green-400">G: {customChase.color1.g}</div>
+                                   <input
+                                     type="range"
+                                     min="0"
+                                     max="255"
+                                     value={customChase.color1.g}
+                                     onChange={(e) => setCustomChase(prev => ({ ...prev, color1: { ...prev.color1, g: parseInt(e.target.value) } }))}
+                                     className="w-full h-1 bg-gray-700 rounded appearance-none cursor-pointer"
+                                   />
+                                 </div>
+                                 <div>
+                                   <div className="text-xs text-blue-400">B: {customChase.color1.b}</div>
+                                   <input
+                                     type="range"
+                                     min="0"
+                                     max="255"
+                                     value={customChase.color1.b}
+                                     onChange={(e) => setCustomChase(prev => ({ ...prev, color1: { ...prev.color1, b: parseInt(e.target.value) } }))}
+                                     className="w-full h-1 bg-gray-700 rounded appearance-none cursor-pointer"
+                                   />
+                                 </div>
+                               </div>
+                             </div>
+                             
+                             <div className="space-y-1">
+                               <div className="text-xs text-cyan-400 font-mono">COR 2 (BLOCO B):</div>
+                               <div className="grid grid-cols-3 gap-1">
+                                 <div>
+                                   <div className="text-xs text-red-400">R: {customChase.color2.r}</div>
+                                   <input
+                                     type="range"
+                                     min="0"
+                                     max="255"
+                                     value={customChase.color2.r}
+                                     onChange={(e) => setCustomChase(prev => ({ ...prev, color2: { ...prev.color2, r: parseInt(e.target.value) } }))}
+                                     className="w-full h-1 bg-gray-700 rounded appearance-none cursor-pointer"
+                                   />
+                                 </div>
+                                 <div>
+                                   <div className="text-xs text-green-400">G: {customChase.color2.g}</div>
+                                   <input
+                                     type="range"
+                                     min="0"
+                                     max="255"
+                                     value={customChase.color2.g}
+                                     onChange={(e) => setCustomChase(prev => ({ ...prev, color2: { ...prev.color2, g: parseInt(e.target.value) } }))}
+                                     className="w-full h-1 bg-gray-700 rounded appearance-none cursor-pointer"
+                                   />
+                                 </div>
+                                 <div>
+                                   <div className="text-xs text-blue-400">B: {customChase.color2.b}</div>
+                                   <input
+                                     type="range"
+                                     min="0"
+                                     max="255"
+                                     value={customChase.color2.b}
+                                     onChange={(e) => setCustomChase(prev => ({ ...prev, color2: { ...prev.color2, b: parseInt(e.target.value) } }))}
+                                     className="w-full h-1 bg-gray-700 rounded appearance-none cursor-pointer"
+                                   />
+                                 </div>
+                               </div>
+                             </div>
+                           </div>
+                           
+                           <div className="grid grid-cols-2 gap-2">
+                             <div className="space-y-1">
+                               <div className="text-xs text-yellow-400 font-mono">PIXELS ENTRE BLOCOS: {customChase.pixelSpacing}</div>
+                               <input
+                                 type="range"
+                                 min="1"
+                                 max="50"
+                                 value={customChase.pixelSpacing}
+                                 onChange={(e) => setCustomChase(prev => ({ ...prev, pixelSpacing: parseInt(e.target.value) }))}
+                                 className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                               />
+                             </div>
+                             
+                             <div className="space-y-1">
+                               <div className="text-xs text-yellow-400 font-mono">TAMANHO BLOCO: {customChase.blockSize}</div>
+                               <input
+                                 type="range"
+                                 min="1"
+                                 max="20"
+                                 value={customChase.blockSize}
+                                 onChange={(e) => setCustomChase(prev => ({ ...prev, blockSize: parseInt(e.target.value) }))}
+                                 className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                               />
+                             </div>
+                           </div>
+                           
+                           <div className="grid grid-cols-2 gap-1">
+                             <div className="flex items-center justify-center p-1 rounded border text-xs font-mono" style={{
+                               backgroundColor: `rgb(${customChase.color1.r}, ${customChase.color1.g}, ${customChase.color1.b})`
+                             }}>
+                               <span className="text-white drop-shadow-lg">COR A</span>
+                             </div>
+                             <div className="flex items-center justify-center p-1 rounded border text-xs font-mono" style={{
+                               backgroundColor: `rgb(${customChase.color2.r}, ${customChase.color2.g}, ${customChase.color2.b})`
+                             }}>
+                               <span className="text-white drop-shadow-lg">COR B</span>
+                             </div>
+                           </div>
+                         </div>
+                       )}
+                       
+                       <button
+                         onClick={() => {
+                           toast({
+                             title: "Efeito Ativado",
+                             description: selectedEffect === 'custom_chase' 
+                               ? `CHASE DUAL COLOR • ${customChase.pixelSpacing}px entre blocos • Tamanho: ${customChase.blockSize}px`
+                               : `${selectedEffect.toUpperCase()} executando a ${effectSpeed}% velocidade`,
+                           });
+                         }}
+                         className="w-full p-2 bg-green-600 hover:bg-green-700 text-white rounded font-mono text-sm transition-all"
+                       >
+                         ▶️ EXECUTAR EFEITO
+                       </button>
                     </div>
                   </div>
                   
                   <div className="p-2 bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded border border-purple-600">
                     <div className="text-purple-300 text-xs font-mono text-center">
-                      ✨ {selectedEffect.toUpperCase()} • VEL: {effectSpeed}% • DIR: {effectDirection === 'forward' ? '→' : '←'}
+                      ✨ {selectedEffect === 'custom_chase' 
+                        ? `CHASE DUAL COLOR • ${customChase.blockSize}px blocos • ${customChase.pixelSpacing}px espaço`
+                        : `${selectedEffect.toUpperCase()} • VEL: ${effectSpeed}% • DIR: ${effectDirection === 'forward' ? '→' : '←'}`
+                      }
                     </div>
                   </div>
                 </div>
