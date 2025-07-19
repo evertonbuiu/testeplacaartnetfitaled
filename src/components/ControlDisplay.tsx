@@ -271,26 +271,93 @@ export function ControlDisplay({
               
               {/* Menu Principal */}
               {currentMenu === 'main' && (
-                <div className="space-y-3">
-                  <div className="text-center">
-                    <h3 className="text-lg font-bold text-white font-mono mb-1">MENU PRINCIPAL</h3>
-                    <div className="text-xs text-blue-300 font-mono">Toque para navegar</div>
+                <div className="space-y-2">
+                  {/* Conexões de Rede */}
+                  <div className="bg-gradient-to-r from-green-900/30 to-green-800/30 rounded-lg p-3 border border-green-600">
+                    <div className="text-center text-green-400 font-bold text-xs font-mono mb-2">CONEXÕES DE REDE</div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                          <span className="text-white text-xs font-mono">ENTRADA ETH</span>
+                        </div>
+                        <Badge className="bg-green-600 text-white text-xs font-mono">CONECTADO</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                          <span className="text-white text-xs font-mono">SAÍDA ETH</span>
+                        </div>
+                        <Badge className="bg-green-600 text-white text-xs font-mono">CONECTADO</Badge>
+                      </div>
+                      <div className="border-t border-green-600/50 pt-1 mt-2">
+                        <div className="text-blue-300 text-xs font-mono mb-1">📡 ART-NET STATUS</div>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="text-center">
+                            <div className="text-white font-bold">4172</div>
+                            <div className="text-gray-400">PACOTES/SEC</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-orange-400 font-bold">125 Mbps</div>
+                            <div className="text-gray-400">TAXA DADOS</div>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-center">
+                          <div className="text-green-400 text-xs font-mono">CONFIGURAÇÃO IP:</div>
+                          <div className="text-white text-sm font-bold">{getCurrentIP()}</div>
+                          <div className="text-gray-400 text-xs">MODO: {networkConfig.mode.toUpperCase()}</div>
+                        </div>
+                        <div className="flex items-center justify-center gap-2 mt-1">
+                          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                          <span className="text-green-400 text-xs font-mono">SISTEMA ATIVO</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div className="grid grid-cols-2 gap-2">
+
+                  {/* Status do Sistema */}
+                  <div className="bg-gradient-to-r from-orange-900/30 to-orange-800/30 rounded-lg p-3 border border-orange-600">
+                    <div className="text-center text-orange-400 font-bold text-xs font-mono mb-2">STATUS DO SISTEMA</div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center p-1 bg-black/20 rounded">
+                        <div className="flex items-center gap-2">
+                          <Zap className="w-3 h-3 text-yellow-400" />
+                          <span className="text-white text-xs font-mono">TEMPERATURA</span>
+                        </div>
+                        <span className="text-white text-sm font-bold font-mono">42°C</span>
+                      </div>
+                      <div className="flex justify-between items-center p-1 bg-black/20 rounded">
+                        <div className="flex items-center gap-2">
+                          <Activity className="w-3 h-3 text-blue-400" />
+                          <span className="text-white text-xs font-mono">TENSÃO</span>
+                        </div>
+                        <span className="text-white text-sm font-bold font-mono">5V</span>
+                      </div>
+                      <div className="flex justify-between items-center p-1 bg-black/20 rounded">
+                        <div className="flex items-center gap-2">
+                          <Activity className="w-3 h-3 text-green-400" />
+                          <span className="text-white text-xs font-mono">CORRENTE</span>
+                        </div>
+                        <span className="text-white text-sm font-bold font-mono">15.2A</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Menu de Navegação */}
+                  <div className="grid grid-cols-2 gap-1">
                     {mainMenuOptions.map((option, index) => (
                       <button
                         key={option.label}
                         onClick={option.action}
-                        className={`p-3 rounded-lg border-2 transition-all duration-200 font-mono text-sm
+                        className={`p-2 rounded border transition-all duration-200 font-mono text-xs
                           ${selectedOption === index 
                             ? 'border-white bg-white/20 text-white' 
                             : 'border-gray-500 bg-gray-800/50 text-gray-300 hover:border-gray-300'
                           }`}
                       >
-                        <div className="flex flex-col items-center gap-1">
-                          <option.icon className={`w-5 h-5 ${option.color || 'text-white'}`} />
-                          <span className="text-xs">{option.label}</span>
+                        <div className="flex items-center gap-1">
+                          <option.icon className={`w-3 h-3 ${option.color || 'text-white'}`} />
+                          <span>{option.label}</span>
                         </div>
                       </button>
                     ))}
