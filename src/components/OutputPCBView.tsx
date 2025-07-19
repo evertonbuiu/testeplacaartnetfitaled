@@ -3,8 +3,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Download, Maximize2, Zap, Cable, Layers, FlipHorizontal, Settings } from 'lucide-react';
-import outputPcbTop from '@/assets/output-pcb-borne-top.jpg';
-import outputPcbBottom from '@/assets/output-pcb-borne-bottom.jpg';
+import outputPcbTop from '@/assets/output-pcb-linear-top.jpg';
+import outputPcbBottom from '@/assets/output-pcb-linear-bottom.jpg';
 
 interface OutputPCBViewProps {
   boardNumber: number;
@@ -27,25 +27,28 @@ export function OutputPCBView({ boardNumber, outputRange }: OutputPCBViewProps) 
   };
 
   const pcbSpecs = [
-    { label: 'DIMENSÕES', value: '120mm x 80mm' },
+    { label: 'DIMENSÕES', value: '160mm x 40mm' },
+    { label: 'LAYOUT', value: 'Linear/Fileira Única' },
     { label: 'CAMADAS', value: '2 Layer PCB' },
     { label: 'ESPESSURA', value: '1.6mm' },
     { label: 'ACABAMENTO', value: 'HASL Lead-Free' },
     { label: 'MÁSCARA', value: 'Verde Fosco' },
     { label: 'SILKSCREEN', value: 'Branco' },
     { label: 'SAÍDAS', value: '8x WS2811/WS2812' },
-    { label: 'CONECTORES', value: 'Borne 4P Robustos' }
+    { label: 'CONECTORES', value: 'Borne 4P Linear' },
+    { label: 'MONTAGEM', value: 'Furos p/ Parafuso' }
   ];
 
   const components = [
     { name: 'Drivers WS2811/WS2812', qty: '8x', type: 'Buffer Logic Level', side: 'bottom' },
-    { name: 'Conectores BORNE 4P', qty: '8x', type: 'Terminais Parafuso', side: 'top' },
+    { name: 'Conectores BORNE 4P', qty: '8x', type: 'Terminais Linear', side: 'top' },
     { name: 'Conector Cabo Flat', qty: '1x', type: '20-Pin FFC', side: 'both' },
     { name: 'LEDs Status RGB', qty: '8x', type: 'SMD 0805', side: 'top' },
     { name: 'Capacitores de Filtro', qty: '16x', type: 'SMD 1206', side: 'bottom' },
     { name: 'Resistores Pull-up', qty: '8x', type: 'SMD 0805', side: 'bottom' },
     { name: 'Proteção ESD', qty: '8x', type: 'TVS Diodes', side: 'bottom' },
-    { name: 'Regulador 5V', qty: '1x', type: 'LDO 5A', side: 'bottom' }
+    { name: 'Regulador 5V', qty: '1x', type: 'LDO 5A', side: 'bottom' },
+    { name: 'Furos de Fixação', qty: '4x', type: 'M3 Mounting', side: 'both' }
   ];
 
   const borneConnections = [
@@ -81,7 +84,7 @@ export function OutputPCBView({ boardNumber, outputRange }: OutputPCBViewProps) 
               PLACA SAÍDAS #{boardNumber}
             </h3>
             <p className="text-sm text-muted-foreground font-mono">
-              Saídas {outputRange} • Conectores BORNE 3P/4P • Lado {currentSide.toUpperCase()}
+              Saídas {outputRange} • Layout Linear • Montagem em Caixa • Lado {currentSide.toUpperCase()}
             </p>
           </div>
           <div className="flex gap-2">
@@ -128,19 +131,25 @@ export function OutputPCBView({ boardNumber, outputRange }: OutputPCBViewProps) 
         <div className="border-2 border-primary rounded-lg overflow-hidden bg-background p-2 relative">
           <img
             src={currentSide === 'top' ? outputPcbTop : outputPcbBottom}
-            alt={`Placa de Saídas ${boardNumber} - ${currentSide}`}
+            alt={`Placa de Saídas Linear ${boardNumber} - ${currentSide}`}
             className="w-full h-auto object-contain rounded"
-            style={{ maxHeight: '250px' }}
+            style={{ maxHeight: '200px' }}
           />
           
           {/* Overlays informativos */}
           {currentSide === 'top' && (
             <>
               <div className="absolute top-3 left-3 bg-primary text-primary-foreground px-2 py-1 rounded font-mono text-xs">
-                BORNE 4P x8
+                BORNE LINEAR 8x4P
               </div>
               <div className="absolute top-3 right-3 bg-accent text-accent-foreground px-2 py-1 rounded font-mono text-xs">
+                CABO FLAT
+              </div>
+              <div className="absolute bottom-3 left-3 bg-led-green text-background px-2 py-1 rounded font-mono text-xs">
                 STATUS LEDS
+              </div>
+              <div className="absolute bottom-3 right-3 bg-led-orange text-background px-2 py-1 rounded font-mono text-xs">
+                FUROS FIXAÇÃO
               </div>
             </>
           )}
@@ -148,10 +157,16 @@ export function OutputPCBView({ boardNumber, outputRange }: OutputPCBViewProps) 
           {currentSide === 'bottom' && (
             <>
               <div className="absolute top-3 left-3 bg-primary text-primary-foreground px-2 py-1 rounded font-mono text-xs">
-                WS281x DRIVERS
+                DRIVERS LINEAR
               </div>
               <div className="absolute top-3 right-3 bg-accent text-accent-foreground px-2 py-1 rounded font-mono text-xs">
                 POWER & FILTER
+              </div>
+              <div className="absolute bottom-3 left-3 bg-led-blue text-background px-2 py-1 rounded font-mono text-xs">
+                ESD PROTECTION
+              </div>
+              <div className="absolute bottom-3 right-3 bg-led-purple text-background px-2 py-1 rounded font-mono text-xs">
+                REGULADOR 5V
               </div>
             </>
           )}
@@ -197,10 +212,10 @@ export function OutputPCBView({ boardNumber, outputRange }: OutputPCBViewProps) 
           </div>
         </div>
 
-        {/* Pinagem dos Conectores BORNE */}
+        {/* Pinagem dos Conectores BORNE Linear */}
         <div className="border-t pt-3">
           <h4 className="text-sm font-bold text-primary font-mono mb-2">
-            PINAGEM CONECTORES BORNE (4 PINOS)
+            LAYOUT LINEAR - CONECTORES BORNE (4 PINOS CADA)
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {borneConnections.map((conn, index) => (
@@ -241,12 +256,53 @@ export function OutputPCBView({ boardNumber, outputRange }: OutputPCBViewProps) 
           </div>
         </div>
 
+        {/* Vantagens do Layout Linear */}
+        <div className="border-t pt-3">
+          <h4 className="text-sm font-bold text-accent font-mono mb-2">
+            VANTAGENS DO LAYOUT LINEAR
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="p-2 bg-background rounded border text-xs font-mono">
+              <div className="font-bold text-primary mb-1">🔧 INSTALAÇÃO EM CAIXA</div>
+              <div className="text-muted-foreground">
+                • Placa fixa na parede da caixa<br/>
+                • Bornes ficam expostos para fora<br/>
+                • Fácil acesso para conexões
+              </div>
+            </div>
+            <div className="p-2 bg-background rounded border text-xs font-mono">
+              <div className="font-bold text-accent mb-1">📏 DESIGN COMPACTO</div>
+              <div className="text-muted-foreground">
+                • Layout otimizado linear<br/>
+                • Máximo aproveitamento do espaço<br/>
+                • Furos de fixação padronizados
+              </div>
+            </div>
+            <div className="p-2 bg-background rounded border text-xs font-mono">
+              <div className="font-bold text-led-green mb-1">⚡ FACILIDADE DE USO</div>
+              <div className="text-muted-foreground">
+                • Conectores robustos borne<br/>
+                • Suporte fitas 3P e 4P<br/>
+                • LEDs de status individuais
+              </div>
+            </div>
+            <div className="p-2 bg-background rounded border text-xs font-mono">
+              <div className="font-bold text-led-orange mb-1">🛡️ PROTEÇÃO PROFISSIONAL</div>
+              <div className="text-muted-foreground">
+                • Proteção ESD em todas saídas<br/>
+                • Filtragem de alimentação<br/>
+                • Regulador de tensão integrado
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Características */}
         <div className="text-xs font-mono text-muted-foreground border-t pt-2">
-          <div>✓ Conectores BORNE robustos para fácil instalação</div>
-          <div>✓ Suporte a fitas LED de 3 e 4 pinos</div>
-          <div>✓ Proteção ESD e filtros de alimentação</div>
-          <div>✓ LEDs de status RGB por saída</div>
+          <div>✓ Layout linear ideal para montagem em caixas/painéis</div>
+          <div>✓ Conectores borne em fileira única para acesso externo</div>
+          <div>✓ Suporte completo a fitas LED de 3 e 4 pinos</div>
+          <div>✓ Furos de fixação M3 para montagem segura</div>
         </div>
       </div>
     </Card>
