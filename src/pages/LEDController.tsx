@@ -21,6 +21,14 @@ interface NetworkConfig {
   mode: 'auto' | 'broadcast' | 'fixed';
 }
 
+interface ICConfig {
+  type: 'WS2811' | 'WS2812' | 'WS2812B' | 'SK6812' | 'APA102' | 'APA104' | 'UCS1903' | 'TM1809' | 'TM1804';
+  frequency: string;
+  colorOrder: 'RGB' | 'GRB' | 'RBG' | 'BRG' | 'BGR' | 'GBR';
+  voltage: '5V' | '12V';
+  pixelsPerMeter: number;
+}
+
 export default function LEDController() {
   const [outputs, setOutputs] = useState<OutputConfig[]>(
     Array.from({ length: 32 }, () => ({ universes: 1, isActive: false }))
@@ -31,6 +39,14 @@ export default function LEDController() {
     subnet: '255.255.255.0',
     gateway: '192.168.1.1',
     mode: 'fixed'
+  });
+  
+  const [icConfig, setICConfig] = useState<ICConfig>({
+    type: 'WS2811',
+    frequency: '400kHz',
+    colorOrder: 'GRB',
+    voltage: '5V',
+    pixelsPerMeter: 60
   });
   
   const [artnetPackets, setArtnetPackets] = useState(0);
@@ -86,7 +102,7 @@ export default function LEDController() {
       <Card className="p-6 bg-gradient-to-r from-card via-card to-card border-2 border-primary">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-primary font-mono">
-            CONTROLADOR LED WS2811 - 32 SAÍDAS
+            CONTROLADOR LED {icConfig.type} - 32 SAÍDAS
           </h1>
           <p className="text-muted-foreground font-mono">
             Sistema Profissional de Controle de Fitas LED via ART-NET
@@ -140,6 +156,8 @@ export default function LEDController() {
             subnet={0}
             networkConfig={networkConfig}
             onNetworkConfigChange={setNetworkConfig}
+            icConfig={icConfig}
+            onICConfigChange={setICConfig}
           />
           
           <NetworkPanel
@@ -188,7 +206,7 @@ export default function LEDController() {
         <div className="lg:col-span-3">
           <Card className="p-6 bg-card border-2 border-primary">
             <h2 className="text-xl font-bold text-center text-primary mb-4 font-mono">
-              SAÍDAS FÍSICAS WS2811
+              SAÍDAS FÍSICAS {icConfig.type}
             </h2>
             <Separator className="mb-4" />
             
@@ -231,10 +249,10 @@ export default function LEDController() {
 
       {/* Footer */}
       <Card className="p-4 bg-card border border-border">
-        <div className="text-center text-xs text-muted-foreground font-mono">
-          SISTEMA DE CONTROLE LED WS2811 | PROTOCOLO ART-NET | 32 SAÍDAS × 8 UNIVERSOS | 
-          DESIGN PROFISSIONAL PARA ILUMINAÇÃO CÊNICA
-        </div>
+          <div className="text-center text-xs text-muted-foreground font-mono">
+            SISTEMA DE CONTROLE LED {icConfig.type} | PROTOCOLO ART-NET | 32 SAÍDAS × 8 UNIVERSOS | 
+            {icConfig.frequency} {icConfig.colorOrder} {icConfig.voltage} | DESIGN PROFISSIONAL PARA ILUMINAÇÃO CÊNICA
+          </div>
       </Card>
     </div>
   );

@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-type MenuState = 'main' | 'artnet' | 'network' | 'test' | 'effects' | 'settings';
+type MenuState = 'main' | 'artnet' | 'network' | 'test' | 'effects' | 'settings' | 'ic_config';
 
 interface NetworkConfig {
   ip: string;
@@ -26,26 +26,51 @@ interface NetworkConfig {
   mode: 'auto' | 'broadcast' | 'fixed';
 }
 
+interface ICConfig {
+  type: 'WS2811' | 'WS2812' | 'WS2812B' | 'SK6812' | 'APA102' | 'APA104' | 'UCS1903' | 'TM1809' | 'TM1804';
+  frequency: string;
+  colorOrder: 'RGB' | 'GRB' | 'RBG' | 'BRG' | 'BGR' | 'GBR';
+  voltage: '5V' | '12V';
+  pixelsPerMeter: number;
+}
+
 interface ControlDisplayProps {
   artnetStatus: 'connected' | 'disconnected';
   universe: number;
   subnet: number;
   networkConfig: NetworkConfig;
   onNetworkConfigChange: (config: NetworkConfig) => void;
+  icConfig?: ICConfig;
+  onICConfigChange?: (config: ICConfig) => void;
 }
 
-export function ControlDisplay({ artnetStatus, universe, subnet, networkConfig, onNetworkConfigChange }: ControlDisplayProps) {
+export function ControlDisplay({ 
+  artnetStatus, 
+  universe, 
+  subnet, 
+  networkConfig, 
+  onNetworkConfigChange,
+  icConfig = {
+    type: 'WS2811',
+    frequency: '800kHz',
+    colorOrder: 'GRB',
+    voltage: '5V',
+    pixelsPerMeter: 60
+  },
+  onICConfigChange 
+}: ControlDisplayProps) {
   const [currentMenu, setCurrentMenu] = useState<MenuState>('main');
   const [selectedOption, setSelectedOption] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [tempConfig, setTempConfig] = useState(networkConfig);
+  const [tempICConfig, setTempICConfig] = useState(icConfig);
 
   const mainMenuOptions = [
     { icon: Wifi, label: 'ART-NET', action: () => setCurrentMenu('artnet') },
     { icon: Network, label: 'REDE IP', action: () => setCurrentMenu('network') },
     { icon: TestTube, label: 'TESTE', action: () => setCurrentMenu('test') },
     { icon: Sparkles, label: 'EFEITOS', action: () => setCurrentMenu('effects') },
-    { icon: Settings, label: 'CONFIG', action: () => setCurrentMenu('settings') },
+    { icon: Settings, label: 'IC CONFIG', action: () => setCurrentMenu('ic_config') },
   ];
 
   const artnetOptions = [
@@ -77,6 +102,15 @@ export function ControlDisplay({ artnetStatus, universe, subnet, networkConfig, 
     { label: 'CHASE', action: () => console.log('Chase effect') },
   ];
 
+  const icConfigOptions = [
+    { label: 'TIPO IC', value: tempICConfig.type, editable: true },
+    { label: 'FREQUÊNCIA', value: tempICConfig.frequency, editable: true },
+    { label: 'ORDEM RGB', value: tempICConfig.colorOrder, editable: true },
+    { label: 'VOLTAGEM', value: tempICConfig.voltage, editable: true },
+    { label: 'PIXELS/M', value: tempICConfig.pixelsPerMeter.toString(), editable: true },
+    { label: 'SALVAR IC', action: () => saveICConfig() },
+  ];
+
   const saveNetworkConfig = () => {
     onNetworkConfigChange(tempConfig);
     setIsEditing(false);
@@ -85,6 +119,17 @@ export function ControlDisplay({ artnetStatus, universe, subnet, networkConfig, 
       description: `IP ${tempConfig.ip} configurado em modo ${tempConfig.mode.toUpperCase()}`,
     });
     console.log('Configuração de rede salva:', tempConfig);
+  };
+
+  const saveICConfig = () => {
+    if (onICConfigChange) {
+      onICConfigChange(tempICConfig);
+    }
+    toast({
+      title: "Configuração IC Salva",
+      description: `${tempICConfig.type} configurado - ${tempICConfig.colorOrder} ${tempICConfig.voltage}`,
+    });
+    console.log('Configuração IC salva:', tempICConfig);
   };
 
   const handleNetworkEdit = (field: string, value: string) => {
@@ -100,6 +145,7 @@ export function ControlDisplay({ artnetStatus, universe, subnet, networkConfig, 
       case 'network': return networkOptions;
       case 'test': return testOptions;
       case 'effects': return effectOptions;
+      case 'ic_config': return icConfigOptions;
       default: return mainMenuOptions;
     }
   };
@@ -236,8 +282,151 @@ export function ControlDisplay({ artnetStatus, universe, subnet, networkConfig, 
                 ))}
               </>
             )}
+
+            {currentMenu === 'ic_config' && (
+              <>
+                <div className="text-xs text-muted-foreground mb-2">CONFIGURAÇÃO ICs LED:</div>
+                {icConfigOptions.map((option, index) => (
+                  <div 
+                    key={option.label}
+                    className={cn(
+                      "flex justify-between p-1 rounded",
+                      selectedOption === index && "bg-primary text-primary-foreground"
+                    )}
+                  >
+                    <span>{option.label}:</span>
+                    {option.editable ? (
+                      <span className="font-bold">
+                        {option.label === 'TIPO IC' ? tempICConfig.type : 
+                         option.label === 'FREQUÊNCIA' ? tempICConfig.frequency :
+                         option.label === 'ORDEM RGB' ? tempICConfig.colorOrder :
+                         option.label === 'VOLTAGEM' ? tempICConfig.voltage :
+                         option.label === 'PIXELS/M' ? tempICConfig.pixelsPerMeter.toString() : ''}
+                      </span>
+                    ) : (
+                      <span className="font-bold text-accent">{option.label}</span>
+                    )}
+                  </div>
+                ))}
+                
+                {/* Indicador de mudanças não salvas */}
+                {JSON.stringify(tempICConfig) !== JSON.stringify(icConfig) && (
+                  <div className="text-xs text-destructive mt-2 text-center">
+                    * CONFIGURAÇÕES IC NÃO SALVAS *
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
+
+        {/* Configuração de IC Detalhada */}
+        {currentMenu === 'ic_config' && (
+          <Card className="p-3 bg-background border border-border">
+            <div className="space-y-3">
+              <h4 className="text-sm font-bold text-accent font-mono">
+                CONFIGURAÇÃO DETALHADA DOS ICs LED
+              </h4>
+              
+              <div className="space-y-2">
+                {/* Tipo de IC */}
+                <div className="space-y-2">
+                  <span className="text-xs font-mono text-muted-foreground">TIPO DE IC:</span>
+                  <div className="grid grid-cols-2 gap-1">
+                    {(['WS2811', 'WS2812', 'WS2812B', 'SK6812', 'APA102', 'APA104', 'UCS1903', 'TM1809'] as const).map((type) => (
+                      <Button
+                        key={type}
+                        size="sm"
+                        variant={tempICConfig.type === type ? "default" : "outline"}
+                        onClick={() => setTempICConfig(prev => ({ 
+                          ...prev, 
+                          type,
+                          frequency: type.startsWith('WS28') ? '800kHz' : type === 'WS2811' ? '400kHz' : '800kHz'
+                        }))}
+                        className="text-xs font-mono"
+                      >
+                        {type}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Frequência */}
+                <div className="space-y-2">
+                  <span className="text-xs font-mono text-muted-foreground">FREQUÊNCIA:</span>
+                  <div className="grid grid-cols-3 gap-1">
+                    {['400kHz', '800kHz', '1.6MHz'].map((freq) => (
+                      <Button
+                        key={freq}
+                        size="sm"
+                        variant={tempICConfig.frequency === freq ? "default" : "outline"}
+                        onClick={() => setTempICConfig(prev => ({ ...prev, frequency: freq }))}
+                        className="text-xs font-mono"
+                      >
+                        {freq}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Ordem das Cores */}
+                <div className="space-y-2">
+                  <span className="text-xs font-mono text-muted-foreground">ORDEM DAS CORES:</span>
+                  <div className="grid grid-cols-3 gap-1">
+                    {(['RGB', 'GRB', 'RBG', 'BRG', 'BGR', 'GBR'] as const).map((order) => (
+                      <Button
+                        key={order}
+                        size="sm"
+                        variant={tempICConfig.colorOrder === order ? "default" : "outline"}
+                        onClick={() => setTempICConfig(prev => ({ ...prev, colorOrder: order }))}
+                        className="text-xs font-mono"
+                      >
+                        {order}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Voltagem */}
+                <div className="space-y-2">
+                  <span className="text-xs font-mono text-muted-foreground">VOLTAGEM:</span>
+                  <div className="grid grid-cols-2 gap-1">
+                    {(['5V', '12V'] as const).map((voltage) => (
+                      <Button
+                        key={voltage}
+                        size="sm"
+                        variant={tempICConfig.voltage === voltage ? "default" : "outline"}
+                        onClick={() => setTempICConfig(prev => ({ ...prev, voltage }))}
+                        className="text-xs font-mono"
+                      >
+                        {voltage}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Descrição do IC selecionado */}
+                <div className="text-xs text-muted-foreground font-mono p-2 bg-background rounded border">
+                  🔧 {tempICConfig.type} - {tempICConfig.frequency} - {tempICConfig.colorOrder} - {tempICConfig.voltage}
+                  <br />
+                  💡 Configuração para fitas LED com {tempICConfig.pixelsPerMeter} pixels por metro
+                </div>
+
+                {/* Botão Salvar */}
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={saveICConfig}
+                  className="w-full text-xs font-mono"
+                  disabled={JSON.stringify(tempICConfig) === JSON.stringify(icConfig)}
+                >
+                  <Check className="w-3 h-3 mr-1" />
+                  SALVAR CONFIGURAÇÃO IC
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Configuração de IP Detalhada (quando em modo de rede) */}
         {currentMenu === 'network' && (
