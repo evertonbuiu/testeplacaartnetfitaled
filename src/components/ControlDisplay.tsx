@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { toast } from '@/hooks/use-toast';
 import { 
   Settings, 
   Wifi, 
@@ -10,24 +12,37 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
-  X
+  X,
+  Network
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-type MenuState = 'main' | 'artnet' | 'test' | 'effects' | 'settings';
+type MenuState = 'main' | 'artnet' | 'network' | 'test' | 'effects' | 'settings';
+
+interface NetworkConfig {
+  ip: string;
+  subnet: string;
+  gateway: string;
+  dhcp: boolean;
+}
 
 interface ControlDisplayProps {
   artnetStatus: 'connected' | 'disconnected';
   universe: number;
   subnet: number;
+  networkConfig: NetworkConfig;
+  onNetworkConfigChange: (config: NetworkConfig) => void;
 }
 
-export function ControlDisplay({ artnetStatus, universe, subnet }: ControlDisplayProps) {
+export function ControlDisplay({ artnetStatus, universe, subnet, networkConfig, onNetworkConfigChange }: ControlDisplayProps) {
   const [currentMenu, setCurrentMenu] = useState<MenuState>('main');
   const [selectedOption, setSelectedOption] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
+  const [tempConfig, setTempConfig] = useState(networkConfig);
 
   const mainMenuOptions = [
     { icon: Wifi, label: 'ART-NET', action: () => setCurrentMenu('artnet') },
+    { icon: Network, label: 'REDE IP', action: () => setCurrentMenu('network') },
     { icon: TestTube, label: 'TESTE', action: () => setCurrentMenu('test') },
     { icon: Sparkles, label: 'EFEITOS', action: () => setCurrentMenu('effects') },
     { icon: Settings, label: 'CONFIG', action: () => setCurrentMenu('settings') },
@@ -38,6 +53,14 @@ export function ControlDisplay({ artnetStatus, universe, subnet }: ControlDispla
     { label: 'SUBNET', value: subnet.toString().padStart(3, '0') },
     { label: 'NET', value: '000' },
     { label: 'STATUS', value: artnetStatus === 'connected' ? 'CONECTADO' : 'DESCONECTADO' },
+  ];
+
+  const networkOptions = [
+    { label: 'MODO', value: networkConfig.dhcp ? 'DHCP' : 'MANUAL', editable: true },
+    { label: 'IP ADDRESS', value: networkConfig.ip, editable: true },
+    { label: 'SUBNET MASK', value: networkConfig.subnet, editable: true },
+    { label: 'GATEWAY', value: networkConfig.gateway, editable: true },
+    { label: 'SALVAR CONFIG', action: () => saveNetworkConfig() },
   ];
 
   const testOptions = [
@@ -54,9 +77,27 @@ export function ControlDisplay({ artnetStatus, universe, subnet }: ControlDispla
     { label: 'CHASE', action: () => console.log('Chase effect') },
   ];
 
+  const saveNetworkConfig = () => {
+    onNetworkConfigChange(tempConfig);
+    setIsEditing(false);
+    toast({
+      title: "Configuração Salva",
+      description: `IP ${tempConfig.ip} configurado em modo ${tempConfig.dhcp ? 'DHCP' : 'MANUAL'}`,
+    });
+    console.log('Configuração de rede salva:', tempConfig);
+  };
+
+  const handleNetworkEdit = (field: string, value: string) => {
+    setTempConfig(prev => ({
+      ...prev,
+      [field]: field === 'dhcp' ? value === 'DHCP' : value
+    }));
+  };
+
   const getCurrentOptions = () => {
     switch (currentMenu) {
       case 'artnet': return artnetOptions;
+      case 'network': return networkOptions;
       case 'test': return testOptions;
       case 'effects': return effectOptions;
       default: return mainMenuOptions;
@@ -143,6 +184,40 @@ export function ControlDisplay({ artnetStatus, universe, subnet }: ControlDispla
               </>
             )}
 
+            {currentMenu === 'network' && (
+              <>
+                <div className="text-xs text-muted-foreground mb-2">CONFIGURAÇÃO DE REDE:</div>
+                {networkOptions.map((option, index) => (
+                  <div 
+                    key={option.label}
+                    className={cn(
+                      "flex justify-between p-1 rounded",
+                      selectedOption === index && "bg-primary text-primary-foreground"
+                    )}
+                  >
+                    <span>{option.label}:</span>
+                    {option.editable ? (
+                      <span className="font-bold">
+                        {option.label === 'MODO' ? (tempConfig.dhcp ? 'DHCP' : 'MANUAL') : 
+                         option.label === 'IP ADDRESS' ? tempConfig.ip :
+                         option.label === 'SUBNET MASK' ? tempConfig.subnet :
+                         option.label === 'GATEWAY' ? tempConfig.gateway : ''}
+                      </span>
+                    ) : (
+                      <span className="font-bold text-accent">{option.label}</span>
+                    )}
+                  </div>
+                ))}
+                
+                {/* Indicador de mudanças não salvas */}
+                {JSON.stringify(tempConfig) !== JSON.stringify(networkConfig) && (
+                  <div className="text-xs text-destructive mt-2 text-center">
+                    * CONFIGURAÇÕES NÃO SALVAS *
+                  </div>
+                )}
+              </>
+            )}
+
             {(currentMenu === 'test' || currentMenu === 'effects') && (
               <>
                 <div className="text-xs text-muted-foreground mb-2">
@@ -163,6 +238,79 @@ export function ControlDisplay({ artnetStatus, universe, subnet }: ControlDispla
             )}
           </div>
         </div>
+
+        {/* Configuração de IP Detalhada (quando em modo de rede) */}
+        {currentMenu === 'network' && (
+          <Card className="p-3 bg-background border border-border">
+            <div className="space-y-3">
+              <h4 className="text-sm font-bold text-accent font-mono">
+                CONFIGURAÇÃO IP DETALHADA
+              </h4>
+              
+              <div className="space-y-2">
+                {/* Modo DHCP/Manual */}
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-mono">MODO:</span>
+                  <Button
+                    size="sm"
+                    variant={tempConfig.dhcp ? "default" : "outline"}
+                    onClick={() => setTempConfig(prev => ({ ...prev, dhcp: !prev.dhcp }))}
+                    className="text-xs font-mono"
+                  >
+                    {tempConfig.dhcp ? 'DHCP' : 'MANUAL'}
+                  </Button>
+                </div>
+
+                {/* Campos IP (apenas se manual) */}
+                {!tempConfig.dhcp && (
+                  <>
+                    <div className="space-y-1">
+                      <label className="text-xs font-mono text-muted-foreground">IP ADDRESS:</label>
+                      <Input
+                        value={tempConfig.ip}
+                        onChange={(e) => setTempConfig(prev => ({ ...prev, ip: e.target.value }))}
+                        className="text-xs font-mono h-8"
+                        placeholder="192.168.1.100"
+                      />
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <label className="text-xs font-mono text-muted-foreground">SUBNET MASK:</label>
+                      <Input
+                        value={tempConfig.subnet}
+                        onChange={(e) => setTempConfig(prev => ({ ...prev, subnet: e.target.value }))}
+                        className="text-xs font-mono h-8"
+                        placeholder="255.255.255.0"
+                      />
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <label className="text-xs font-mono text-muted-foreground">GATEWAY:</label>
+                      <Input
+                        value={tempConfig.gateway}
+                        onChange={(e) => setTempConfig(prev => ({ ...prev, gateway: e.target.value }))}
+                        className="text-xs font-mono h-8"
+                        placeholder="192.168.1.1"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Botão Salvar */}
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={saveNetworkConfig}
+                  className="w-full text-xs font-mono"
+                  disabled={JSON.stringify(tempConfig) === JSON.stringify(networkConfig)}
+                >
+                  <Check className="w-3 h-3 mr-1" />
+                  SALVAR CONFIGURAÇÃO
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Botões de Controle */}
         <div className="grid grid-cols-2 gap-2">

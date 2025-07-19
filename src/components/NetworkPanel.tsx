@@ -8,9 +8,11 @@ interface NetworkPanelProps {
   outputStatus: 'connected' | 'disconnected';
   artnetPackets: number;
   dataRate: string;
+  currentIP: string;
+  networkMode: string;
 }
 
-export function NetworkPanel({ inputStatus, outputStatus, artnetPackets, dataRate }: NetworkPanelProps) {
+export function NetworkPanel({ inputStatus, outputStatus, artnetPackets, dataRate, currentIP, networkMode }: NetworkPanelProps) {
   return (
     <Card className="p-4 bg-card border-2 border-primary">
       <div className="space-y-4">
@@ -72,7 +74,7 @@ export function NetworkPanel({ inputStatus, outputStatus, artnetPackets, dataRat
             <span className="font-mono text-sm text-foreground">ART-NET STATUS</span>
           </div>
           
-          <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+          <div className="grid grid-cols-2 gap-2 text-xs font-mono mb-3">
             <div className="bg-background p-2 rounded border">
               <div className="text-muted-foreground">PACOTES/SEC</div>
               <div className="text-lg font-bold text-artnet-active">{artnetPackets}</div>
@@ -81,6 +83,13 @@ export function NetworkPanel({ inputStatus, outputStatus, artnetPackets, dataRat
               <div className="text-muted-foreground">TAXA DADOS</div>
               <div className="text-lg font-bold text-accent">{dataRate}</div>
             </div>
+          </div>
+
+          {/* Configuração IP Atual */}
+          <div className="bg-background p-2 rounded border">
+            <div className="text-muted-foreground text-xs mb-1">CONFIGURAÇÃO IP:</div>
+            <div className="text-sm font-bold text-primary">{currentIP}</div>
+            <div className="text-xs text-accent">{networkMode}</div>
           </div>
         </div>
 

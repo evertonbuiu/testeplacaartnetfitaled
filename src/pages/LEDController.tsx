@@ -14,10 +14,24 @@ interface OutputConfig {
   isActive: boolean;
 }
 
+interface NetworkConfig {
+  ip: string;
+  subnet: string;
+  gateway: string;
+  dhcp: boolean;
+}
+
 export default function LEDController() {
   const [outputs, setOutputs] = useState<OutputConfig[]>(
     Array.from({ length: 32 }, () => ({ universes: 1, isActive: false }))
   );
+  
+  const [networkConfig, setNetworkConfig] = useState<NetworkConfig>({
+    ip: '192.168.1.100',
+    subnet: '255.255.255.0',
+    gateway: '192.168.1.1',
+    dhcp: false
+  });
   
   const [artnetPackets, setArtnetPackets] = useState(0);
   const [systemStats, setSystemStats] = useState({
@@ -99,6 +113,8 @@ export default function LEDController() {
             artnetStatus="connected"
             universe={1}
             subnet={0}
+            networkConfig={networkConfig}
+            onNetworkConfigChange={setNetworkConfig}
           />
           
           <NetworkPanel
@@ -106,6 +122,8 @@ export default function LEDController() {
             outputStatus="connected"
             artnetPackets={artnetPackets}
             dataRate="125 Mbps"
+            currentIP={networkConfig.ip}
+            networkMode={networkConfig.dhcp ? 'DHCP' : 'MANUAL'}
           />
 
           {/* Status do Sistema */}
