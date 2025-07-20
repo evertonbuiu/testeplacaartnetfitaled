@@ -143,6 +143,12 @@ export default function LEDController() {
                 VER PLACAS DE SAÍDA
               </Link>
             </Button>
+            <Button asChild variant="default" className="font-mono">
+              <Link to="/interactive-viewer">
+                <Zap className="w-4 h-4 mr-2" />
+                VIEWER INTERATIVO 3D
+              </Link>
+            </Button>
           </div>
         </div>
       </Card>

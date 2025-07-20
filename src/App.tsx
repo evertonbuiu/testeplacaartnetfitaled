@@ -8,6 +8,7 @@ import SchematicPage from "./pages/SchematicPage";
 import PCBPage from "./pages/PCBPage";
 import DisplayPCBPage from "./pages/DisplayPCBPage";
 import OutputPCBPage from "./pages/OutputPCBPage";
+import InteractiveViewerPage from "./pages/InteractiveViewerPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/pcb" element={<PCBPage />} />
         <Route path="/display-pcb" element={<DisplayPCBPage />} />
         <Route path="/output-pcb" element={<OutputPCBPage />} />
+        <Route path="/interactive-viewer" element={<InteractiveViewerPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
