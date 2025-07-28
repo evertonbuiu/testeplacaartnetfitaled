@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { LEDOutput } from '@/components/LEDOutput';
 import { ControlDisplay } from '@/components/ControlDisplay';
 import { NetworkPanel } from '@/components/NetworkPanel';
+import { CelusIntegration } from '@/components/CelusIntegration';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -251,6 +252,11 @@ export default function LEDController() {
             </div>
           </Card>
         </div>
+      </div>
+
+      {/* Celus Integration */}
+      <div className="mb-6">
+        <CelusIntegration />
       </div>
 
       {/* Footer */}
