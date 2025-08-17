@@ -110,7 +110,7 @@ function PCB3DScene({ components, onComponentClick }: { components: Component3D[
       
       {/* Grid de referência */}
       <Grid 
-        infiniteGrid 
+        infiniteGrid={true}
         cellSize={1} 
         cellThickness={0.5} 
         sectionSize={5} 
